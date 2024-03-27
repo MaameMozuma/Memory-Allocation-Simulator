@@ -116,10 +116,11 @@ void implementNextFit(memoryBlock* head, memoryBlock* lastBlock, int processID, 
             break;
         }
         current = current->next;
-        // ToDo: Implement a way to loop back to the first block if the last block is reached
+        // wrap around to the head of the memory blocks if the end of the list is reached
         if (current == NULL){
             current = head;
         }
+        // stop the loop if we return to the last allocated block
         else if (current == lastBlock){
             break;
         }
