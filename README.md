@@ -1,11 +1,15 @@
 # Memory-Allocation-Simulator
 
-### To run the main.c file, follow these instructions:
-### 1) gcc -c memory_struct.c -o memory_struct.o      
-### 2) gcc -c memory_allocation_algorithms.c -o memory_allocation_algorithms.o 
-### 3) gcc -c main.c -o main.o    
-### 4) gcc memory_struct.o memory_allocation_algorithms.o main.o -o memorySimulation
+### To run the program, follow these instructions:
 
-### ----------------------------------------------------------------------------------
-### After this, run ./memorySimulation to run the test created on the routine 'implementBestFit'
-### To try the worst-fit algorithm, replace 'implementBestFit' with 'implementWorstFit', compile step 3 and 4 again before running
+1. Run the following command in the terminal to compile the relevant files 
+```bash
+make all
+```
+2. Run the command `./memorySimulation` to run the generated executable
+
+### Current program
+- The current test runs on the routine 'implementBestFit'
+- To try the worst-fit algorithm, replace 'implementBestFit' with 'implementWorstFit' and run step 1 and 2 again
+- To try the first-fit algorithm, replace 'implementBestFit' with 'implementFirstFit' and run step 1 and 2 again
+
