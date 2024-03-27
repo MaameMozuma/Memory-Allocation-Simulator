@@ -72,3 +72,34 @@ void implementWorstFit(memoryBlock* head, int processID, int processSize){
         printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", processID, processSize);
     }
 }
+
+void implementFirstFit(memoryBlock* head, int processID, int processSize){
+    memoryBlock* current = head;
+    memoryBlock* firstFitBlock = NULL;
+    while(current != NULL){
+        if (current->status == 0 && current->size >= processSize){
+            firstFitBlock = current;
+            break;
+        }
+        current = current->next;
+    }
+    if (firstFitBlock != NULL){
+        int fragmentation = firstFitBlock->size - processSize;
+
+        for (int i = 0; i < BLOCK_SIZE; i++) {
+            if (firstFitBlock->processIDs[i] == -1) { // Find an empty slot
+                firstFitBlock->processIDs[i] = processID;
+                firstFitBlock->processSizes[i] = processSize;
+                break; // Exit loop after inserting process ID
+            }
+        }
+        firstFitBlock->size = fragmentation;
+        if (firstFitBlock->size == 0){
+            firstFitBlock->status = 1;
+        }
+
+    }
+    else {
+        printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", processID, processSize);
+    }
+}
