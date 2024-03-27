@@ -8,7 +8,7 @@ int main(){
     int processSizes[5] = {4, 2, 2, 3, 8};
     initializeMemory(head);
     for (int i = 0; i < 5; i++){
-        implementWorstFit(head, processIDs[i], processSizes[i]);
+        implementBestFit(head, processIDs[i], processSizes[i]);
     }
     printMemory(head);
 

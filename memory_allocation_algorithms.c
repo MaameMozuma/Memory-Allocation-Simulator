@@ -76,6 +76,8 @@ void implementWorstFit(memoryBlock* head, int processID, int processSize){
 void implementFirstFit(memoryBlock* head, int processID, int processSize){
     memoryBlock* current = head;
     memoryBlock* firstFitBlock = NULL;
+
+    //loop through the memory blocks to find the first block that fits the process
     while(current != NULL){
         if (current->status == 0 && current->size >= processSize){
             firstFitBlock = current;
@@ -93,9 +95,49 @@ void implementFirstFit(memoryBlock* head, int processID, int processSize){
                 break; // Exit loop after inserting process ID
             }
         }
+        // update block status to allocated
         firstFitBlock->size = fragmentation;
         if (firstFitBlock->size == 0){
             firstFitBlock->status = 1;
+        }
+
+    }
+    else {
+        printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", processID, processSize);
+    }
+}
+
+void implementNextFit(memoryBlock* head, memoryBlock* lastBlock, int processID, int processSize){
+    memoryBlock* current = lastBlock;
+    memoryBlock* nextFitBlock = NULL;
+    while(current != NULL){
+        if (current->status == 0 && current->size >= processSize){
+            nextFitBlock = current;
+            break;
+        }
+        current = current->next;
+        // ToDo: Implement a way to loop back to the first block if the last block is reached
+        if (current == NULL){
+            current = head;
+        }
+        else if (current == lastBlock){
+            break;
+        }
+    }
+
+    if (nextFitBlock != NULL){
+        int fragmentation = nextFitBlock->size - processSize;
+
+        for (int i = 0; i < BLOCK_SIZE; i++) {
+            if (nextFitBlock->processIDs[i] == -1) { // Find an empty slot
+                nextFitBlock->processIDs[i] = processID;
+                nextFitBlock->processSizes[i] = processSize;
+                break; // Exit loop after inserting process ID
+            }
+        }
+        nextFitBlock->size = fragmentation;
+        if (nextFitBlock->size == 0){
+            nextFitBlock->status = 1;
         }
 
     }
