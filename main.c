@@ -5,6 +5,7 @@ int main(){
     int num_processes;
     int memory[MEMORY_SIZE] = {0}; // Example memory array (0 for free, 1 for allocated)
     FreeTable FreeTable;
+    // ToDo: Create a variable to track the last allocation that can be used for next fit 
 
     srand(time(NULL)); // Seed the random number generator
 

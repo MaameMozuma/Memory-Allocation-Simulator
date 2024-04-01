@@ -127,3 +127,60 @@ void implementWorstFit(int memory[], FreeTable* freeTable, Process process){
             printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
     }
 }
+
+
+/**
+ * The function `implementFirstFit` searches for the first available memory block that fits a process
+ * and allocates memory accordingly.
+ * 
+ * @param memory The `memory` parameter in the `implementFirstFit` function is an array representing
+ * the memory blocks available for allocation. It is used to keep track of the memory status, whether
+ * it is allocated to a process or free.
+ * @param freeTable The `FreeTable` structure seems to contain an array of `FreeEntry` elements. Each
+ * `FreeEntry` represents a block of free memory in the system, with a `start_address` and a `size`.
+ * The `implementFirstFit` function is designed to allocate memory for a given process
+ * @param process The `implementFirstFit` function you provided is designed to allocate memory for a
+ * process using the First Fit algorithm. It searches for the first available memory block that can
+ * accommodate the process based on its memory requirement.
+ */
+void implementFirstFit(int memory[], FreeTable* freeTable, Process process){
+    FreeEntry firstFitBlock = {-1, -1};
+    int i = 0;
+    int length = sizeof(freeTable->freeEntries) / sizeof(freeTable->freeEntries[0]);
+
+    // find the first block that fits the process
+    while (i < length){
+        //check if it's a free entry and if it's size is greater than the process memory requirement
+        if (freeTable->freeEntries[i].start_address != -1 && freeTable->freeEntries[i].size >= process.memory_required){
+            firstFitBlock = freeTable->freeEntries[i];
+            break;
+        }
+        i++;
+    }
+
+    // check if a block (firstFitBlock) was found 
+    if (firstFitBlock.start_address != -1 && firstFitBlock.size != -1){
+        allocateMemory(memory, firstFitBlock.start_address, process.memory_required);
+        allocateProcessSpace(memory, process, firstFitBlock.start_address);
+
+        for(int i = 0; i < length; i++){
+            if (freeTable->freeEntries[i].start_address == firstFitBlock.start_address){
+                if (firstFitBlock.size == process.memory_required){
+                    // allocate memory, eliminate the entire free block
+                    freeTable->freeEntries[i].start_address = -1;
+                    freeTable->freeEntries[i].size = -1;
+                    freeTable->capacity -= 1;
+                }
+                else{
+                    // update the free table to remove the space the process occupied only
+                    freeTable->freeEntries[i].start_address = firstFitBlock.start_address + process.memory_required;
+                    freeTable->freeEntries[i].size = firstFitBlock.size - process.memory_required;
+                }
+            }
+        }
+       }
+       else {
+            printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
+         }
+   
+}
