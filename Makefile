@@ -1,5 +1,5 @@
 CC = gcc
-SRC = memory_struct.c memory_allocation_algorithms.c main.c
+SRC = process.c utils.c memory_alloc_algo.c main.c
 OBJ = $(SRC:.c=.o)
 EXEC = memorySimulation
 
