@@ -184,3 +184,95 @@ void implementFirstFit(int memory[], FreeTable* freeTable, Process process){
          }
    
 }
+
+
+/**
+ * The implementNextFit function allocates memory for a process using the Next Fit algorithm, updating
+ * the free table accordingly.
+ * 
+ * @param memory The `memory` parameter is an array representing the memory space available for
+ * allocation. It likely contains information about the memory blocks and their status (free or
+ * allocated).
+ * @param freeTable The `freeTable` parameter in the `implementNextFit` function represents a data
+ * structure that holds information about the free memory blocks available for allocation. It likely
+ * contains an array of `FreeEntry` structures, where each `FreeEntry` structure represents a free
+ * memory block with a start address and size
+ * @param process The `process` parameter in the `implementNextFit` function represents the process
+ * that needs to be allocated memory. It contains information about the process, such as its process ID
+ * (`pid`) and the amount of memory required by the process. The function attempts to find a suitable
+ * memory block in the free
+ * @param lastAllocatedBlock The `lastAllocatedBlock` parameter is a pointer to a `FreeEntry` struct
+ * that represents the last allocated memory block. It contains the `start_address` and `size` of the
+ * block that was last allocated to a process. This information is used in the `implementNextFit`
+ * function
+ */
+void implementNextFit(int memory[], FreeTable* freeTable, Process process, FreeEntry* lastAllocatedBlock){
+    FreeEntry nextFitBlock = {-1, -1};
+    int i = 0; //start from the first entry in the free table if lastAllocatedBlock is at the end or not available
+    int length = sizeof(freeTable->freeEntries) / sizeof(freeTable->freeEntries[0]);
+
+    if(lastAllocatedBlock->start_address != -1 && lastAllocatedBlock->size != -1){
+        // find the next block after the last allocated block that fits the process
+        for (int j = 0; j < length; j++){
+            if (freeTable->freeEntries[j].start_address == lastAllocatedBlock->start_address && freeTable->freeEntries[j].size == lastAllocatedBlock->size){
+                i = (j + 1) % length; // move i to the next free block after the last allocated block
+                break;
+            }
+        }
+    }
+    
+
+    while(1){ //while true
+        if (freeTable->freeEntries[i].start_address != -1 && freeTable->freeEntries[i].size >= process.memory_required){
+            nextFitBlock = freeTable->freeEntries[i];
+            // update the last allocated block to the current block
+            lastAllocatedBlock->start_address = nextFitBlock.start_address;
+            lastAllocatedBlock->size = nextFitBlock.size;
+            break;
+        }
+        
+        i = (i + 1) % length; // wrap around back to the beginning if the last block was at the end
+
+        // end the loop if we are back to the last allocated block from the beginning
+        if(freeTable->freeEntries[i].start_address == lastAllocatedBlock->start_address && freeTable->freeEntries[i].size == lastAllocatedBlock->size){
+            break;
+        }
+
+    }
+
+    // check if a block (NextFitBlock) was found 
+    if (nextFitBlock.start_address != -1 && nextFitBlock.size != -1){
+        allocateMemory(memory, nextFitBlock.start_address, process.memory_required);
+        allocateProcessSpace(memory, process, nextFitBlock.start_address);
+
+        printf("An allocation is complete\n");
+        printMemory(memory);
+
+        for (int i = 0; i < length; i++){
+            if (freeTable->freeEntries[i].start_address == nextFitBlock.start_address){
+                if (nextFitBlock.size == process.memory_required){
+                    // allocate memory, eliminate the entire free block
+                    freeTable->freeEntries[i].start_address = -1;
+                    freeTable->freeEntries[i].size = -1;
+                    freeTable->capacity -= 1;
+
+                    break;
+
+                }
+                else{
+                    //update free table to remove the processes' occupied space only
+                    freeTable->freeEntries[i].start_address = nextFitBlock.start_address + process.memory_required;
+                    freeTable->freeEntries[i].size = nextFitBlock.size - process.memory_required;
+
+                    break;
+                }
+            }
+        }
+
+        printFreeTable(freeTable);
+       
+    }
+    else {
+        printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
+    }
+}

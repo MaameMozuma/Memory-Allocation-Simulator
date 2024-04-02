@@ -5,7 +5,7 @@ int main(){
     int num_processes;
     int memory[MEMORY_SIZE] = {0}; // Example memory array (0 for free, 1 for allocated)
     FreeTable FreeTable;
-    // ToDo: Create a variable to track the last allocation that can be used for next fit 
+    FreeEntry lastAllocatedBlock = {-1, -1};
 
     srand(time(NULL)); // Seed the random number generator
 
@@ -47,20 +47,23 @@ int main(){
 
     printFreeTable(&FreeTable);
 
-    //using best fit for the next few processes
+    //using next fit for the next few processes
     int proc_idx;
     for (proc_idx = num_of_processes/2; proc_idx < num_of_processes; proc_idx++){
-        implementBestFit(memory, &FreeTable, processes_in_memory[proc_idx]); //change the function here to test for worst fit
+        // implementBestFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
+        // implementWorstFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
+        // implementFirstFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
+        implementNextFit(memory, &FreeTable, processes_in_memory[proc_idx], &lastAllocatedBlock);
     }
 
-    printf("Memory After a Process has been allocated using best fit: \n");
+    printf("Memory After a Process has been allocated using the allocation function: \n");
     printMemory(memory);
     printf("\n");
 
     printAllProcesses();
     printf("\n");
 
-    printf("Free table after best fit implementation: \n");
+    printf("Free table after allocation function implementation: \n");
     printFreeTable(&FreeTable);
 
     return 0;
