@@ -52,8 +52,8 @@ int main(){
     for (proc_idx = num_of_processes/2; proc_idx < num_of_processes; proc_idx++){
         // implementBestFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
         // implementWorstFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
-        // implementFirstFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
-        implementNextFit(memory, &FreeTable, processes_in_memory[proc_idx], &lastAllocatedBlock);
+        implementFirstFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
+        // implementNextFit(memory, &FreeTable, processes_in_memory[proc_idx], &lastAllocatedBlock);
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");

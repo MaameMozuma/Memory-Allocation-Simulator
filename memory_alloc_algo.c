@@ -208,14 +208,17 @@ void implementFirstFit(int memory[], FreeTable* freeTable, Process process){
  */
 void implementNextFit(int memory[], FreeTable* freeTable, Process process, FreeEntry* lastAllocatedBlock){
     FreeEntry nextFitBlock = {-1, -1};
+    FreeEntry firstFreeBlock; //stores the address of the first block in the free table after the last allocated block
     int i = 0; //start from the first entry in the free table if lastAllocatedBlock is at the end or not available
     int length = sizeof(freeTable->freeEntries) / sizeof(freeTable->freeEntries[0]);
 
     if(lastAllocatedBlock->start_address != -1 && lastAllocatedBlock->size != -1){
         // find the next block after the last allocated block that fits the process
         for (int j = 0; j < length; j++){
-            if (freeTable->freeEntries[j].start_address == lastAllocatedBlock->start_address && freeTable->freeEntries[j].size == lastAllocatedBlock->size){
-                i = (j + 1) % length; // move i to the next free block after the last allocated block
+            if (freeTable->freeEntries[j].start_address > (lastAllocatedBlock->start_address + lastAllocatedBlock->size)){
+                i = j; // move i to a free block in an address after the end of the last allocated block 
+                firstFreeBlock.start_address = freeTable->freeEntries[j].start_address;
+                firstFreeBlock.size = freeTable->freeEntries[j].size; 
                 break;
             }
         }
@@ -230,11 +233,10 @@ void implementNextFit(int memory[], FreeTable* freeTable, Process process, FreeE
             lastAllocatedBlock->size = nextFitBlock.size;
             break;
         }
-        
         i = (i + 1) % length; // wrap around back to the beginning if the last block was at the end
 
-        // end the loop if we are back to the last allocated block from the beginning
-        if(freeTable->freeEntries[i].start_address == lastAllocatedBlock->start_address && freeTable->freeEntries[i].size == lastAllocatedBlock->size){
+        // end the loop if we are back to the first free block from the beginning
+        if(freeTable->freeEntries[i].start_address == firstFreeBlock.start_address && freeTable->freeEntries[i].size == firstFreeBlock.size){
             break;
         }
 
@@ -244,9 +246,6 @@ void implementNextFit(int memory[], FreeTable* freeTable, Process process, FreeE
     if (nextFitBlock.start_address != -1 && nextFitBlock.size != -1){
         allocateMemory(memory, nextFitBlock.start_address, process.memory_required);
         allocateProcessSpace(memory, process, nextFitBlock.start_address);
-
-        printf("An allocation is complete\n");
-        printMemory(memory);
 
         for (int i = 0; i < length; i++){
             if (freeTable->freeEntries[i].start_address == nextFitBlock.start_address){
@@ -269,7 +268,6 @@ void implementNextFit(int memory[], FreeTable* freeTable, Process process, FreeE
             }
         }
 
-        printFreeTable(freeTable);
        
     }
     else {
