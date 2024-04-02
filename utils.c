@@ -199,10 +199,12 @@ void printFreeTable(FreeTable* freeTable) {
     printf("Free Table Contents:\n");
     printf("Capacity: %d\n", freeTable->capacity);
     printf("Free Entries:\n");
-    for (int i = 0; i < freeTable->capacity; i++) {
-        printf("Entry %d:\n", i + 1);
-        printf("Start Address: %d and Size: %d \n", freeTable->freeEntries[i].start_address, freeTable->freeEntries[i].size);
-        printf("\n");
+    for (int i = 0; i < MAX_FREE_TABLE_SIZE; i++) {
+        if (freeTable->freeEntries[i].start_address != -1){
+            printf("Entry %d:\n", i + 1);
+            printf("Start Address: %d and Size: %d \n", freeTable->freeEntries[i].start_address, freeTable->freeEntries[i].size);
+            printf("\n");
+        }
     }
 }
 
