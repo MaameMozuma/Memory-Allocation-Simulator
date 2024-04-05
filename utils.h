@@ -18,6 +18,7 @@ typedef struct {
 } FreeTable; //stores a list of all the free blocks
 
 int generateRandomAddress();
+int generateRandomMemorySize();
 int isMemoryAvailable(int memory[], Process process, int address);
 void allocateMemory(int memory[], int address, int size);
 void allocateProcessRandomly(int memory[], Process process, int process_idx);
@@ -25,4 +26,3 @@ void printMemory(int memory[]);
 void initializeFreeTable(FreeTable* freeTable);
 void addToFreeTable(int memory[], FreeTable* freeTable);
 void printFreeTable(FreeTable* freeTable);
-

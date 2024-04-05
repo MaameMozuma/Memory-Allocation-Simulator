@@ -15,7 +15,7 @@
  * will start in the memory space.
  */
 void allocateProcessSpace(int memory[], Process process, int address){
-    processes_in_memory[process.pid - 1].start_address = address;
+    // processes_in_memory[process.pid - 1].start_address = address;
     printf("Process %d of size %d allocated at address %d\n", process.pid, process.memory_required, address);
 }
 

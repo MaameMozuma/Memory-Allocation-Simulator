@@ -17,6 +17,19 @@ int generateRandomAddress(){
     return randomNumber;
 }
 
+/**
+ * The function generates a random memory size within a specified range.
+ * 
+ * @return The function `generateRandomMemorySize` returns a random integer value between 1 and half of
+ * the `MEMORY_SIZE` value.
+ */
+int generateRandomMemorySize(){
+    int lowerBound = 1;
+    int upperBound = MEMORY_SIZE/2;
+    int randomNumber = (rand() % (upperBound - lowerBound + 1)) + lowerBound;
+    return randomNumber;
+}
+
 
 /**
  * The function `isMemoryAvailable` checks if a range of memory locations is available for a process
@@ -101,7 +114,6 @@ void allocateProcessRandomly(int memory[], Process process, int process_idx){
         address = generateRandomAddress();
         if (isMemoryAvailable(memory, process, address) == 1) { //if there is memory available for allocation
             allocateMemory(memory, address, process.memory_required);
-            processes_in_memory[process_idx].start_address = address; //update the process with its start address
             allocated = 1; //process has been allocated
             printf("Process %d of size %d allocated at address %d\n", process.pid, process.memory_required, address);
         }
@@ -207,6 +219,7 @@ void printFreeTable(FreeTable* freeTable) {
         }
     }
 }
+
 
 
 // int main(){
