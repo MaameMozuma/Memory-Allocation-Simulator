@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h> 
 #include "process.h"
+#include <string.h>
 
 #define MEMORY_SIZE 50
 #define MAX_ATTEMPTS 50
@@ -43,3 +44,6 @@ void initializeProcessAddrTable(ProcessAddrTable* addrTable);
 void addToProccessAddrTable(ProcessAddrTable* addrTable, pid_t pid, int startAddress);
 void shiftProcessAddrEntries(ProcessAddrTable* addrTable);
 void printProcessAddrTable(ProcessAddrTable* addrTable);
+void compactMemory(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable);
+int compare(const void* a, const void* b);
+int findIndex(int value);

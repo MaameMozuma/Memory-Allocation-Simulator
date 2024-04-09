@@ -45,6 +45,21 @@ int main(){
         allocateProcessRandomly(memory, processes_in_memory[i], &ProcessAddrTable, i);
     }
 
+    // printf("Memory Before Compaction: \n");
+    // printMemory(memory);
+    // printf("\n");  
+
+    // compactMemory(memory, &FreeTable, &ProcessAddrTable);
+
+    // printf("Memory After Compaction: \n");
+    // printMemory(memory);  
+
+    // printAllProcesses(); 
+
+    // printFreeTable(&FreeTable);
+
+    // printProcessAddrTable(&ProcessAddrTable);
+
     printf("Memory After a Process has been allocated randomly: \n");
     printMemory(memory);
 
@@ -60,7 +75,7 @@ int main(){
     for (proc_idx = num_of_processes/2; proc_idx < num_of_processes; proc_idx++){
         // implementBestFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
         // implementWorstFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
-        implementBestFit(memory, &FreeTable, &ProcessAddrTable, processes_in_memory[proc_idx]); 
+        implementWorstFit(memory, &FreeTable, &ProcessAddrTable, processes_in_memory[proc_idx]); 
         // implementNextFit(memory, &FreeTable, processes_in_memory[proc_idx], &lastAllocatedBlock);
     }
 

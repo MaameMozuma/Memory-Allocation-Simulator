@@ -304,6 +304,14 @@ void shiftProcessAddrEntries(ProcessAddrTable* addrTable){
     addrTable->capacity -= 1;
 }
 
+/**
+ * The function `printProcessAddrTable` prints the contents of a process address table, including
+ * process IDs and start addresses.
+ * 
+ * @param addrTable The function `printProcessAddrTable` is designed to print the contents of a
+ * `ProcessAddrTable` structure. The structure contains information about process address table
+ * entries, including the capacity and an array of `ProcessAddrEntry` elements.
+ */
 void printProcessAddrTable(ProcessAddrTable* addrTable){
     printf("Process Address Table Contents:\n");
     printf("Capacity: %d\n", addrTable->capacity);
@@ -316,6 +324,90 @@ void printProcessAddrTable(ProcessAddrTable* addrTable){
         }
     }   
 }
+
+/**
+ * The `compactMemory` function reorganizes memory by moving active processes to the beginning and
+ * updating their base addresses in the process address table.
+ * 
+ * @param memory The `memory` parameter is an array representing the memory space. Each element in the
+ * array corresponds to a memory block, and the value `1` indicates that the block is occupied by a
+ * process, while `0` indicates that the block is free.
+ * @param freeTable The `freeTable` parameter is a pointer to a `FreeTable` structure that contains free blocks
+ * @param addrTable `addrTable` is a structure that contains information about the addresses of
+ * processes in memory. It includes an array of `ProcessAddrEntry` structures, each representing a
+ * process in memory with its base address and process ID. The `capacity` field indicates the total
+ * number of entries that can be stored in the address table
+ */
+void compactMemory(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable){
+    int writeIndex = 0;
+    ProcessAddrEntry* sortedArray = malloc(addrTable->capacity * sizeof(ProcessAddrEntry));
+    memcpy(sortedArray, addrTable->ProcessAddrEntries, addrTable->capacity * sizeof(ProcessAddrEntry));
+    qsort(sortedArray, addrTable->capacity, sizeof(ProcessAddrEntry), compare);
+    for (int readIndex = 0; readIndex < MEMORY_SIZE; readIndex++) {
+        if (memory[readIndex] == 1) {
+            memory[writeIndex] = 1;
+            if (writeIndex != readIndex) {
+                memory[readIndex] = 0;
+            }
+            writeIndex++;
+        }
+    }
+
+    int currAddress = 0;
+    int index = 0;
+    for (int i = 0; i < num_of_processes; i++){
+        index = findIndex(sortedArray[i].pid);
+        addrTable->ProcessAddrEntries[index].base = currAddress;
+        currAddress += processes_in_memory[index].memory_required;
+    }
+    freeTable->capacity = 0;
+    addToFreeTable(memory, freeTable);
+    free(sortedArray);
+}
+
+
+/**
+ * The function `compare` compares the base addresses of two `ProcessAddrEntry` structures.
+ * 
+ * @param a The `a` parameter is a pointer to a `ProcessAddrEntry` object, which is being cast from a
+ * `void` pointer in the `compare` function.
+ * @param b The parameter `b` in the `compare` function is a pointer to a `void` type. In this specific
+ * implementation, it is being cast to a `ProcessAddrEntry*` type to compare two `ProcessAddrEntry`
+ * structures based on their `base` member.
+ * 
+ * @return The `compare` function is returning the result of subtracting the `base` value of `entryB`
+ * from the `base` value of `entryA`. This result will be an integer value representing the comparison
+ * between the two `ProcessAddrEntry` structures.
+ */
+int compare(const void* a, const void* b){
+    ProcessAddrEntry* entryA = (ProcessAddrEntry*) a;
+    ProcessAddrEntry* entryB = (ProcessAddrEntry*) b;
+
+    return entryA->base - entryB->base;
+}
+
+/**
+ * The function `findIndex` searches for a specific value(pid) in an array of processes and returns the
+ * index if found, or -1 if not found.
+ * 
+ * @param value The `value` parameter represents the process ID that you are searching for in the
+ * `processes_in_memory` array. The function `findIndex` iterates through the array to find the index
+ * of the element that matches the given `value`. If the `value` is found, the function returns
+ * 
+ * @return The function `findIndex` returns the index of the element with the specified value in the
+ * `processes_in_memory` array if it is found. If the value is not found in the array, the function
+ * returns -1.
+ */
+int findIndex(int value) {
+    for (int i = 0; i < num_of_processes; i++) {
+        if (processes_in_memory[i].pid == value) {
+            return i;  // Return the index if the value is found
+        }
+    }
+    return -1;  // Return -1 if the value is not found
+}
+
+
 
 // int main(){
 //     int num_processes;
