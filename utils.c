@@ -25,7 +25,7 @@ int generateRandomAddress(){
  */
 int generateRandomMemorySize(){
     int lowerBound = 1;
-    int upperBound = MEMORY_SIZE/2;
+    int upperBound = MEMORY_SIZE/4;
     int randomNumber = (rand() % (upperBound - lowerBound + 1)) + lowerBound;
     return randomNumber;
 }
@@ -87,6 +87,32 @@ void allocateMemory(int memory[], int address, int size){
 
 
 /**
+ * The function `deallocateMemory` deallocates memory occupied by a process in a memory management
+ * system.
+ * 
+ * @param memory The `memory` parameter is an array that represents the physical memory where processes
+ * are allocated. I
+ * @param addrTable The `addrTable` parameter is a pointer to a structure or array named
+ * `ProcessAddrTable`. This structure contains information about the memory addresses of
+ * processes currently in memory.
+ * @param freeTable The `freeTable` parameter in the `deallocateMemory` function is a pointer to a
+ * structure or object of type `FreeTable`. This structure contains information about the free
+ * memory blocks available in the system, such as the starting address and size of each free block. 
+ */
+void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* freeTable){
+    int memory_address = addrTable->ProcessAddrEntries[0].base;
+    int memory_size = processes_in_memory[0].memory_required;
+    shiftProcessAddrEntries(addrTable);
+    shiftFreeTableEntries(freeTable, 0);
+    shiftProcessesInMemory();
+    freeTable->capacity = 0;
+    for (int i = memory_address; i < memory_address + memory_size; i++){
+        memory[i] = 0;
+    }
+    addToFreeTable(memory, freeTable); //come back here
+}
+
+/**
  * The function `allocateProcessRandomly` attempts to allocate memory for a process randomly within a
  * given memory space, with a limit on the number of attempts.
  * 
@@ -100,7 +126,7 @@ void allocateMemory(int memory[], int address, int size){
  * the index of the current process being allocated in the `processes_in_memory` array. This index is
  * used to track the position of the process in the array for further reference or updates.
  */
-void allocateProcessRandomly(int memory[], Process process, int process_idx){
+void allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* addrTable, int process_idx){
     int address;
     int num_attemps = 0;
     int allocated = 0; //0 == False, 1 == True
@@ -114,6 +140,7 @@ void allocateProcessRandomly(int memory[], Process process, int process_idx){
         address = generateRandomAddress();
         if (isMemoryAvailable(memory, process, address) == 1) { //if there is memory available for allocation
             allocateMemory(memory, address, process.memory_required);
+            addToProccessAddrTable(addrTable, process.pid, address);
             allocated = 1; //process has been allocated
             printf("Process %d of size %d allocated at address %d\n", process.pid, process.memory_required, address);
         }
@@ -198,6 +225,20 @@ void addToFreeTable(int memory[], FreeTable* freeTable){
 
 }
 
+
+/**
+ * The function `shiftFreeTableEntries` shifts elements in a FreeTable array to the left by one
+ * position and decreases the capacity by one.
+ * 
+ * @param freeTable FreeTable is a data structure that contains information about free memory blocks
+ */
+void shiftFreeTableEntries(FreeTable* freeTable, int index){
+    for (int i = index; i < freeTable->capacity; i++){
+        freeTable->freeEntries[i] = freeTable->freeEntries[i+1];
+    }
+    freeTable->capacity -= 1;    
+}
+
 /**
  * The function `printFreeTable` prints the contents of a FreeTable structure including capacity and
  * free entries.
@@ -211,16 +252,70 @@ void printFreeTable(FreeTable* freeTable) {
     printf("Free Table Contents:\n");
     printf("Capacity: %d\n", freeTable->capacity);
     printf("Free Entries:\n");
-    for (int i = 0; i < MAX_FREE_TABLE_SIZE; i++) {
-        if (freeTable->freeEntries[i].start_address != -1){
-            printf("Entry %d:\n", i + 1);
-            printf("Start Address: %d and Size: %d \n", freeTable->freeEntries[i].start_address, freeTable->freeEntries[i].size);
-            printf("\n");
-        }
+    for (int i = 0; i < freeTable->capacity; i++) {
+        printf("Entry %d:\n", i + 1);
+        printf("Start Address: %d and Size: %d \n", freeTable->freeEntries[i].start_address, freeTable->freeEntries[i].size);
+        printf("\n");
     }
 }
 
+/**
+ * The function `initializeProcessAddrTable` initializes the `ProcessAddrTable` structure by setting its
+ * capacity to 0 and initializing each entry in the `ProcessAddrEntries` array with default values (pid
+ * = - 1 and the base = -1)
+ * @param addrTable The `addrTable` parameter is a pointer to a `ProcessAddrTable` structure
+ */
+void initializeProcessAddrTable(ProcessAddrTable* addrTable){
+    addrTable->capacity = 0;
 
+    for (int i = 0; i < MEMORY_SIZE; i++){
+        addrTable->ProcessAddrEntries[i].pid = -1;
+        addrTable->ProcessAddrEntries[i].base = -1;
+    }
+
+}
+
+/**
+ * The function `addToProccessAddrTable` adds a new entry to a process address table with the given
+ * process ID and memory base address.
+ * @param addrTable The `addrTable` parameter is a pointer to a `ProcessAddrTable` struct, which
+ * contains information about process address entries.
+ * @param pid The `pid` parameter is the process ID (pid) of a process. It is a unique identifier
+ * assigned to each process running on a system.
+ * @param memory The `memory` parameter in the `addToProccessAddrTable` function represents the base
+ * memory address associated with a specific process identified by its `pid`. 
+ */
+void addToProccessAddrTable(ProcessAddrTable* addrTable, pid_t pid, int startAddress){
+    addrTable->ProcessAddrEntries[addrTable->capacity].pid = pid;
+    addrTable->ProcessAddrEntries[addrTable->capacity].base = startAddress;
+    addrTable->capacity += 1;
+}
+
+/**
+ * The function `shiftProcessAddrEntries` shifts all entries in a `ProcessAddrTable` structure to the
+ * left by one position and decrements the capacity by one.
+ * @param addrTable The `addrTable` parameter is a pointer to a `ProcessAddrTable` struct, which
+ * contains information about process address entries.
+ */
+void shiftProcessAddrEntries(ProcessAddrTable* addrTable){
+    for (int i = 0; i < addrTable->capacity; i++){
+        addrTable->ProcessAddrEntries[i] = addrTable->ProcessAddrEntries[i+1];
+    }
+    addrTable->capacity -= 1;
+}
+
+void printProcessAddrTable(ProcessAddrTable* addrTable){
+    printf("Process Address Table Contents:\n");
+    printf("Capacity: %d\n", addrTable->capacity);
+    printf("Process Address Table Entries:\n");
+    for (int i = 0; i < addrTable->capacity; i++) {
+        if (addrTable->ProcessAddrEntries[i].pid != -1){
+            printf("Entry %d:\n", i + 1);
+            printf("Process Id: %d and Start Address: %d \n", addrTable->ProcessAddrEntries[i].pid, addrTable->ProcessAddrEntries[i].base);
+            printf("\n");
+        }
+    }   
+}
 
 // int main(){
 //     int num_processes;

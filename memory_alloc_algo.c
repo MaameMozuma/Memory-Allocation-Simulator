@@ -33,44 +33,49 @@ void allocateProcessSpace(int memory[], Process process, int address){
  * free memory block with a start address and size.
  * @param process The `process` structure is a process with start address and size
  */
-void implementBestFit(int memory[], FreeTable* freeTable, Process process){
-    int min_fragmentation = MEMORY_SIZE + 1;
+void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process){
+    int min_fragmentation;
     FreeEntry bestFitBlock = {-1, -1};
-    int i = 0;
-    int length = sizeof(freeTable->freeEntries) / sizeof(freeTable->freeEntries[0]);
 
-    while (i < length){
-        if (freeTable->freeEntries[i].start_address != -1 && freeTable->freeEntries[i].size >= process.memory_required){
-            int fragmentation = freeTable->freeEntries[i].size - process.memory_required;
-            if (fragmentation < min_fragmentation){
-                min_fragmentation = fragmentation;
-                bestFitBlock = freeTable->freeEntries[i];
-            }
-        }
-        i++;
-    }
-    if (bestFitBlock.start_address != -1 && bestFitBlock.size != -1){
-        allocateMemory(memory, bestFitBlock.start_address, process.memory_required);
-        allocateProcessSpace(memory, process, bestFitBlock.start_address);
-
-        for (int i = 0; i < length; i++){
-            if (freeTable->freeEntries[i].start_address == bestFitBlock.start_address){
-                if (bestFitBlock.size == process.memory_required){
-                    freeTable->freeEntries[i].start_address = -1;
-                    freeTable->freeEntries[i].size = -1;
-                    freeTable->capacity -= 1;
-                }
-                else{
-                    freeTable->freeEntries[i].start_address = bestFitBlock.start_address + process.memory_required;
-                    freeTable->freeEntries[i].size = min_fragmentation;
+    while (freeTable->capacity > 0){
+        min_fragmentation = MEMORY_SIZE + 1;
+        int length = freeTable->capacity;
+        int i = 0;
+        while (i < length){
+            if (freeTable->freeEntries[i].size >= process.memory_required){
+                int fragmentation = freeTable->freeEntries[i].size - process.memory_required;
+                if (fragmentation < min_fragmentation){
+                    min_fragmentation = fragmentation;
+                    bestFitBlock = freeTable->freeEntries[i];
                 }
             }
+            i++;
         }
         
+        if (bestFitBlock.start_address != -1 && bestFitBlock.size != -1){
+            allocateMemory(memory, bestFitBlock.start_address, process.memory_required);
+            allocateProcessSpace(memory, process, bestFitBlock.start_address);
+            addToProccessAddrTable(addrTable, process.pid, bestFitBlock.start_address);
+
+            for (int i = 0; i < length; i++){
+                if (freeTable->freeEntries[i].start_address == bestFitBlock.start_address){
+                    if (bestFitBlock.size == process.memory_required){
+                        shiftFreeTableEntries(freeTable, i);
+                    }
+                    else{
+                        freeTable->freeEntries[i].start_address = bestFitBlock.start_address + process.memory_required;
+                        freeTable->freeEntries[i].size = min_fragmentation;
+                    }
+                }
+            }
+            return;
+        
+        }
+        else {
+            deallocateMemory(memory, addrTable,freeTable);
+        }    
     }
-    else {
-            printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
-    }
+    printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
 }
 
 
