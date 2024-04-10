@@ -76,7 +76,7 @@ int main(){
         // implementBestFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
         // implementWorstFit(memory, &FreeTable, processes_in_memory[proc_idx]); 
         implementWorstFit(memory, &FreeTable, &ProcessAddrTable, processes_in_memory[proc_idx]); 
-        // implementNextFit(memory, &FreeTable, processes_in_memory[proc_idx], &lastAllocatedBlock);
+        // implementNextFit(memory, &FreeTable, &ProcessAddrTable, processes_in_memory[proc_idx], &lastAllocatedBlock);
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");

@@ -45,14 +45,3 @@ void printMemory(memoryBlock* head){
         head = head -> next;
     }
 }
-
-// void freeMemory(memoryBlock* head){
-//     memoryBlock* current = head;
-//     memoryBlock* next;
-
-//     while (current != NULL){
-//         next = current->next;
-//         current-> status = 0;
-//         current = next;
-//     }
-// }

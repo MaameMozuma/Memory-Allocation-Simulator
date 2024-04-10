@@ -156,45 +156,51 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
  * process using the First Fit algorithm. It searches for the first available memory block that can
  * accommodate the process based on its memory requirement.
  */
-void implementFirstFit(int memory[], FreeTable* freeTable, Process process){
+void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process){
     FreeEntry firstFitBlock = {-1, -1};
-    int i = 0;
-    int length = sizeof(freeTable->freeEntries) / sizeof(freeTable->freeEntries[0]);
 
-    // find the first block that fits the process
-    while (i < length){
-        //check if it's a free entry and if it's size is greater than the process memory requirement
-        if (freeTable->freeEntries[i].start_address != -1 && freeTable->freeEntries[i].size >= process.memory_required){
-            firstFitBlock = freeTable->freeEntries[i];
-            break;
+    while(freeTable->capacity > 0){
+        int i = 0;
+        int length = freeTable->capacity;
+
+        // find the first block that fits the process
+        while (i < length){
+            //check if it's a free entry and if it's size is greater than the process memory requirement
+            if (freeTable->freeEntries[i].size >= process.memory_required){
+                firstFitBlock = freeTable->freeEntries[i];
+                break;
+            }
+            i++;
         }
-        i++;
-    }
 
-    // check if a block (firstFitBlock) was found 
-    if (firstFitBlock.start_address != -1 && firstFitBlock.size != -1){
-        allocateMemory(memory, firstFitBlock.start_address, process.memory_required);
-        allocateProcessSpace(memory, process, firstFitBlock.start_address);
+        // check if a block (firstFitBlock) was found 
+        if (firstFitBlock.start_address != -1 && firstFitBlock.size != -1){
+            allocateMemory(memory, firstFitBlock.start_address, process.memory_required);
+            allocateProcessSpace(memory, process, firstFitBlock.start_address);
+            addToProccessAddrTable(addrTable, process.pid, firstFitBlock.start_address);
 
-        for(int i = 0; i < length; i++){
-            if (freeTable->freeEntries[i].start_address == firstFitBlock.start_address){
-                if (firstFitBlock.size == process.memory_required){
-                    // allocate memory, eliminate the entire free block
-                    freeTable->freeEntries[i].start_address = -1;
-                    freeTable->freeEntries[i].size = -1;
-                    freeTable->capacity -= 1;
-                }
-                else{
-                    // update the free table to remove the space the process occupied only
-                    freeTable->freeEntries[i].start_address = firstFitBlock.start_address + process.memory_required;
-                    freeTable->freeEntries[i].size = firstFitBlock.size - process.memory_required;
+            for(int i = 0; i < length; i++){
+                if (freeTable->freeEntries[i].start_address == firstFitBlock.start_address){
+                    if (firstFitBlock.size == process.memory_required){
+                        // allocate memory, eliminate the entire free block
+                       shiftFreeTableEntries(freeTable, i);
+                    }
+                    else{
+                        // update the free table to remove the space the process occupied only
+                        freeTable->freeEntries[i].start_address = firstFitBlock.start_address + process.memory_required;
+                        freeTable->freeEntries[i].size = firstFitBlock.size - process.memory_required;
+                    }
                 }
             }
+            return;
+
         }
-       }
-       else {
-            printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
-         }
+        else {
+            deallocateMemory(memory, addrTable, freeTable);
+        }
+    }
+    
+    printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
    
 }
 
@@ -219,71 +225,75 @@ void implementFirstFit(int memory[], FreeTable* freeTable, Process process){
  * block that was last allocated to a process. This information is used in the `implementNextFit`
  * function
  */
-void implementNextFit(int memory[], FreeTable* freeTable, Process process, FreeEntry* lastAllocatedBlock){
+void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock){
     FreeEntry nextFitBlock = {-1, -1};
     FreeEntry firstFreeBlock; //stores the address of the first block in the free table after the last allocated block
-    int i = 0; //start from the first entry in the free table if lastAllocatedBlock is at the end or not available
-    int length = sizeof(freeTable->freeEntries) / sizeof(freeTable->freeEntries[0]);
 
-    if(lastAllocatedBlock->start_address != -1 && lastAllocatedBlock->size != -1){
+    while(freeTable->capacity > 0){
+        int i = 0; //start from the first entry in the free table if lastAllocatedBlock is at the end or not available
+        int length = freeTable->capacity;
+
+        if(lastAllocatedBlock->start_address != -1 && lastAllocatedBlock->size != -1){
         // find the next block after the last allocated block that fits the process
-        for (int j = 0; j < length; j++){
-            if (freeTable->freeEntries[j].start_address > (lastAllocatedBlock->start_address + lastAllocatedBlock->size)){
-                i = j; // move i to a free block in an address after the end of the last allocated block 
-                firstFreeBlock.start_address = freeTable->freeEntries[j].start_address;
-                firstFreeBlock.size = freeTable->freeEntries[j].size; 
-                break;
+            for (int j = 0; j < length; j++){
+                if (freeTable->freeEntries[j].start_address > (lastAllocatedBlock->start_address + lastAllocatedBlock->size)){
+                    i = j; // move i to a free block in an address after the end of the last allocated block 
+                    firstFreeBlock.start_address = freeTable->freeEntries[j].start_address;
+                    firstFreeBlock.size = freeTable->freeEntries[j].size; 
+                    break;
+                }
             }
         }
-    }
     
 
-    while(1){ //while true
-        if (freeTable->freeEntries[i].start_address != -1 && freeTable->freeEntries[i].size >= process.memory_required){
-            nextFitBlock = freeTable->freeEntries[i];
-            // update the last allocated block to the current block
-            lastAllocatedBlock->start_address = nextFitBlock.start_address;
-            lastAllocatedBlock->size = nextFitBlock.size;
-            break;
+        while(1){ //while true
+            if (freeTable->freeEntries[i].start_address != -1 && freeTable->freeEntries[i].size >= process.memory_required){
+            // if (freeTable->freeEntries[i].size >= process.memory_required){
+                nextFitBlock = freeTable->freeEntries[i];
+                // update the last allocated block to the current block
+                lastAllocatedBlock->start_address = nextFitBlock.start_address;
+                lastAllocatedBlock->size = nextFitBlock.size;
+                break;
+            }
+            i = (i + 1) % length; // wrap around back to the beginning if the last block was at the end
+
+            // end the loop if we are back to the first free block from the beginning
+            if(freeTable->freeEntries[i].start_address == firstFreeBlock.start_address && freeTable->freeEntries[i].size == firstFreeBlock.size){
+                break;
+            }
+
         }
-        i = (i + 1) % length; // wrap around back to the beginning if the last block was at the end
 
-        // end the loop if we are back to the first free block from the beginning
-        if(freeTable->freeEntries[i].start_address == firstFreeBlock.start_address && freeTable->freeEntries[i].size == firstFreeBlock.size){
-            break;
-        }
+        // check if a block (NextFitBlock) was found 
+        if (nextFitBlock.start_address != -1 && nextFitBlock.size != -1){
+            allocateMemory(memory, nextFitBlock.start_address, process.memory_required);
+            allocateProcessSpace(memory, process, nextFitBlock.start_address);
+            addToProccessAddrTable(addrTable, process.pid, nextFitBlock.start_address);
 
-    }
+            for (int i = 0; i < length; i++){
+                if (freeTable->freeEntries[i].start_address == nextFitBlock.start_address){
+                    if (nextFitBlock.size == process.memory_required){
+                        // allocate memory, eliminate the entire free block
+                        shiftFreeTableEntries(freeTable, i);
 
-    // check if a block (NextFitBlock) was found 
-    if (nextFitBlock.start_address != -1 && nextFitBlock.size != -1){
-        allocateMemory(memory, nextFitBlock.start_address, process.memory_required);
-        allocateProcessSpace(memory, process, nextFitBlock.start_address);
+                    }
+                    else{
+                        //update free table to remove the processes' occupied space only
+                        freeTable->freeEntries[i].start_address = nextFitBlock.start_address + process.memory_required;
+                        freeTable->freeEntries[i].size = nextFitBlock.size - process.memory_required;
 
-        for (int i = 0; i < length; i++){
-            if (freeTable->freeEntries[i].start_address == nextFitBlock.start_address){
-                if (nextFitBlock.size == process.memory_required){
-                    // allocate memory, eliminate the entire free block
-                    freeTable->freeEntries[i].start_address = -1;
-                    freeTable->freeEntries[i].size = -1;
-                    freeTable->capacity -= 1;
-
-                    break;
-
-                }
-                else{
-                    //update free table to remove the processes' occupied space only
-                    freeTable->freeEntries[i].start_address = nextFitBlock.start_address + process.memory_required;
-                    freeTable->freeEntries[i].size = nextFitBlock.size - process.memory_required;
-
-                    break;
+                    }
                 }
             }
+            return;
+    
         }
-
-       
+        else {
+            deallocateMemory(memory, addrTable, freeTable);
+        }
+        
     }
-    else {
-        printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
-    }
+    
+    printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
+    
 }
