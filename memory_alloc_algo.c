@@ -142,19 +142,22 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
 }
 
 
+
 /**
- * The function `implementFirstFit` searches for the first available memory block that fits a process
- * and allocates memory accordingly.
+ * The function `implementFirstFit` allocates memory for a process using the First Fit algorithm,
+ * finding the first available block that can accomodate the process.
  * 
- * @param memory The `memory` parameter in the `implementFirstFit` function is an array representing
- * the memory blocks available for allocation. It is used to keep track of the memory status, whether
- * it is allocated to a process or free.
- * @param freeTable The `FreeTable` structure seems to contain an array of `FreeEntry` elements. Each
- * `FreeEntry` represents a block of free memory in the system, with a `start_address` and a `size`.
- * The `implementFirstFit` function is designed to allocate memory for a given process
- * @param process The `implementFirstFit` function you provided is designed to allocate memory for a
- * process using the First Fit algorithm. It searches for the first available memory block that can
- * accommodate the process based on its memory requirement.
+ *@param memory The `memory` parameter is an array representing the memory blocks available for
+ * allocation.
+ * @param freeTable The `freeTable` parameter in the `implementFirstFit` function is a pointer to a
+ * structure or object of type `FreeTable`.
+ * @param addrTable The `addrTable` parameter in the `implementFirstFit` function is of type
+ * `ProcessAddrTable*`, which is a pointer to a structure or object representing a table that maps
+ * process IDs to their allocated memory addresses. This table is used to keep track of the memory
+ * addresses allocated to each process
+ * @param process Accepts a process to be allocated memory using the algorithm
+ * 
+ * @return The function `implementFirstFit` returns void.
  */
 void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process){
     FreeEntry firstFitBlock = {-1, -1};
@@ -206,24 +209,23 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
 
 
 /**
- * The implementNextFit function allocates memory for a process using the Next Fit algorithm, updating
- * the free table accordingly.
+ * The function `implementNextFit` allocates memory for a process using the Next Fit algorithm, searching for the first available block
+ * beginning the search from where the last allocation happened.
  * 
- * @param memory The `memory` parameter is an array representing the memory space available for
- * allocation. It likely contains information about the memory blocks and their status (free or
- * allocated).
- * @param freeTable The `freeTable` parameter in the `implementNextFit` function represents a data
- * structure that holds information about the free memory blocks available for allocation. It likely
- * contains an array of `FreeEntry` structures, where each `FreeEntry` structure represents a free
- * memory block with a start address and size
- * @param process The `process` parameter in the `implementNextFit` function represents the process
- * that needs to be allocated memory. It contains information about the process, such as its process ID
- * (`pid`) and the amount of memory required by the process. The function attempts to find a suitable
- * memory block in the free
- * @param lastAllocatedBlock The `lastAllocatedBlock` parameter is a pointer to a `FreeEntry` struct
- * that represents the last allocated memory block. It contains the `start_address` and `size` of the
- * block that was last allocated to a process. This information is used in the `implementNextFit`
- * function
+ *@param memory The `memory` parameter is an array representing the memory blocks available for
+ * allocation.
+ * @param freeTable The `freeTable` parameter in the `implementNextFit` function is a pointer to a
+ * structure or object of type `FreeTable`.
+ * @param addrTable The `addrTable` parameter in the `implementNextFit` function is of type
+ * `ProcessAddrTable*`, which is a pointer to a structure or object representing a table that maps
+ * process IDs to their allocated memory addresses. This table is used to keep track of the memory
+ * addresses allocated to each process
+ * @param process Accepts a process to be allocated memory using the algorithm
+ * @param lastAllocatedBlock The `lastAllocatedBlock` parameter is a pointer to a `FreeEntry`
+ * structure that represents the last block of memory that was allocated to a process. Used in the Next fit algorithm
+ * as a note of where to start the search from.
+ * 
+ * @return The function `implementNextFit` returns void.
  */
 void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock){
     FreeEntry nextFitBlock = {-1, -1};
@@ -238,17 +240,17 @@ void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
             for (int j = 0; j < length; j++){
                 if (freeTable->freeEntries[j].start_address > (lastAllocatedBlock->start_address + lastAllocatedBlock->size)){
                     i = j; // move i to a free block in an address after the end of the last allocated block 
-                    firstFreeBlock.start_address = freeTable->freeEntries[j].start_address;
-                    firstFreeBlock.size = freeTable->freeEntries[j].size; 
                     break;
                 }
             }
         }
+        // assign the first free block to where i is
+        firstFreeBlock.start_address = freeTable->freeEntries[i].start_address;
+        firstFreeBlock.size = freeTable->freeEntries[i].size;
     
 
         while(1){ //while true
             if (freeTable->freeEntries[i].start_address != -1 && freeTable->freeEntries[i].size >= process.memory_required){
-            // if (freeTable->freeEntries[i].size >= process.memory_required){
                 nextFitBlock = freeTable->freeEntries[i];
                 // update the last allocated block to the current block
                 lastAllocatedBlock->start_address = nextFitBlock.start_address;
