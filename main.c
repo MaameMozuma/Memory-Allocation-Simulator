@@ -1,182 +1,189 @@
 #include "memory_alloc_algo.h"
 #include <unistd.h>
 
+void readNumProcesses(int *num_processes, int max_num_processes) {
+    printf("Enter the number of processes (up to %d): ", max_num_processes);
+    scanf("%d", num_processes);
+
+    // Validate the number of processes
+    if (*num_processes < 1 || *num_processes > max_num_processes) {
+        printf("Invalid number of processes. Exiting...\n");
+        exit(1); // or return an error code if necessary
+    }
+}
+
+void initialize(FreeTable *Freetable, ProcessAddrTable *AddrTable) {
+    initializeFreeTable(Freetable);
+    initializeProcessAddrTable(AddrTable);
+}
+
+void createParentProcess(Process *parent_process, int lowerbound, int upperbound) {
+    pid_t pid = getpid();
+    int memory_required = generateRandomMemorySize(lowerbound, upperbound); // or any other appropriate range
+    createProcess(pid, memory_required, 0);
+}
+
+void createAdditionalProcesses(Process* process, Process process_arr[], int num_processes, int lowerbound, int upperbound) {
+    for (int i = 1; i < num_processes; i++) {
+        process = getProcessID();
+        int memory_required = generateRandomMemorySize(lowerbound, upperbound); // or any other appropriate range
+        createProcess(process->pid, memory_required, i);
+        upperbound += 2;
+    }
+}
 
 int main(){
     int num_processes;
-    int memory[MEMORY_SIZE] = {0}; // Example memory array (0 for free, 1 for allocated)
+    int maxProcesses;
+    int memory[MEMORY_SIZE] = {0}; // Memory array (0 for free, 1 for allocated)
     Process *process = malloc(sizeof(Process));
     FreeTable Freetable;
+    FreeTable freeTableCopyBF;
+    FreeTable freeTableCopyWF;
+    FreeTable freeTableCopyFF;
+    FreeTable freeTableCopyNF;
     ProcessAddrTable AddrTable;
+    ProcessAddrTable AddrTableCopyBF;
+    ProcessAddrTable AddrTableCopyWF;
+    ProcessAddrTable AddrTableCopyFF;
+    ProcessAddrTable AddrTableCopyNF;
     FreeEntry lastAllocatedBlock = {-1, -1};
+    int best_fit_num_processes, worst_fit_num_processes, first_fit_num_processes, next_fit_num_processes;
 
     srand(time(NULL)); // Seed the random number generator
-
-    initializeFreeTable(&Freetable); //initialising free table
-
-    initializeProcessAddrTable(&AddrTable); //initialising process address table
 
     printf("Memory Initially: \n");
     printMemory(memory);
 
-    printf("Enter the number of processes (up to %d): ", MAX_PROCESSES);
-    scanf("%d", &num_processes);
+    // Prompt the user to enter a value for MAX_PROCESSES
+    printf("Enter the maximum number of processes: ");
+    scanf("%d", &maxProcesses);
 
-    // Validate the number of processes
-    if (num_processes < 1 || num_processes > MAX_PROCESSES) {
-        printf("Invalid number of processes. Exiting...\n");
-        return 1;
-    }
+    // Assign the user-input value to MAX_PROCESSES
+    #undef MAX_PROCESSES
+    #define MAX_PROCESSES maxProcesses
 
-    // store parent process
-    pid_t pid = getpid();
-    int memory_required = generateRandomMemorySize(1, 5);
-    createProcess(pid, memory_required, 0);
+    readNumProcesses(&num_processes, maxProcesses); //reading the number of processes from the user
 
-    //creating processes with random memory sizes
-    int upperBound = 7;
-    for (int i = 1; i < num_processes; i++) { //retrieving the memory required for the number of processes entered
-        int memory_required = generateRandomMemorySize(2, upperBound);
-        process = getProcessID();
-        createProcess(process->pid, memory_required, i);
-        upperBound += 2;
-    }
+    initialize(&Freetable, &AddrTable); //initialising the free table and the process address table
 
-    // Copy the processes in memory
-    int best_fit_num_processes = num_of_processes;
+    createParentProcess(process, 1, 5); //creating the parent process
+
+    createAdditionalProcesses(process, processes_in_memory, num_processes, 2, 7); //creating the additional processes
+
+    printAllProcesses(processes_in_memory, num_of_processes); //printing all the processes in memory
+
+    best_fit_num_processes = worst_fit_num_processes = first_fit_num_processes = next_fit_num_processes = num_of_processes;
+    
+    // Copy the processes_in_memory array for the various algorithms
     Process best_fit_processes[MAX_PROCESSES];
-    memcpy(best_fit_processes, processes_in_memory, sizeof(processes_in_memory));
-
-    // Copy the processes in memory
-    int worst_fit_num_processes = num_of_processes;
     Process worst_fit_processes[MAX_PROCESSES];
-    memcpy(worst_fit_processes, processes_in_memory, sizeof(processes_in_memory));
-
-    // Copy the processes in memory
-    int first_fit_num_processes = num_of_processes;
     Process first_fit_processes[MAX_PROCESSES];
-    memcpy(first_fit_processes, processes_in_memory, sizeof(processes_in_memory));
-
-    // Copy the processes in memory
-    int next_fit_num_processes = num_of_processes;
     Process next_fit_processes[MAX_PROCESSES];
-    memcpy(next_fit_processes, processes_in_memory, sizeof(processes_in_memory));
 
+    memcpy(best_fit_processes, processes_in_memory, sizeof(processes_in_memory));
+    memcpy(worst_fit_processes, processes_in_memory, sizeof(processes_in_memory));
+    memcpy(first_fit_processes, processes_in_memory, sizeof(processes_in_memory));
+    memcpy(next_fit_processes, processes_in_memory, sizeof(processes_in_memory));
 
     //allocate memory for the first half of the processes randomly
     for (int i = 0; i < num_of_processes/2; i++){
         allocateProcessRandomly(memory, processes_in_memory[i], &AddrTable, i);
     }
 
-    printf("Memory After a Process has been allocated randomly: \n");
-    printMemory(memory);
+    addToFreeTable(memory, &Freetable); //creating the free blocks and putting it in the free table
 
     // Copy the memory array for the various algorithms
+    int BFmemoryCopy[MEMORY_SIZE];
     int WFmemoryCopy[MEMORY_SIZE];
-    memcpy(WFmemoryCopy, memory, MEMORY_SIZE * sizeof(int));
-
-    // Copy the memory array for the various algorithms
     int FFmemoryCopy[MEMORY_SIZE];
-    memcpy(FFmemoryCopy, memory, MEMORY_SIZE * sizeof(int));
-
-    // Copy the memory array for the various algorithms
     int NFmemoryCopy[MEMORY_SIZE];
+
+    memcpy(BFmemoryCopy, memory, MEMORY_SIZE * sizeof(int));
+    memcpy(WFmemoryCopy, memory, MEMORY_SIZE * sizeof(int));
+    memcpy(FFmemoryCopy, memory, MEMORY_SIZE * sizeof(int));
     memcpy(NFmemoryCopy, memory, MEMORY_SIZE * sizeof(int));
 
-    addToFreeTable(memory, &Freetable); //creating the free blocks and putting it in the free table
-    
-    //creating a copy of the free table instance
-    FreeTable freeTableCopyWF;
+    // Copy the FreeTable for the various algorithms
+    freeTableCopyBF.capacity = Freetable.capacity;
     freeTableCopyWF.capacity = Freetable.capacity;
-
-    //creating a copy of the free table instance
-    FreeTable freeTableCopyFF;
     freeTableCopyFF.capacity = Freetable.capacity;
-
-    //creating a copy of the free table instance
-    FreeTable freeTableCopyNF;
     freeTableCopyNF.capacity = Freetable.capacity;
 
     // Copy each FreeEntry
     for (int i = 0; i < Freetable.capacity; i++) {
+        freeTableCopyBF.freeEntries[i] = Freetable.freeEntries[i];
         freeTableCopyWF.freeEntries[i] = Freetable.freeEntries[i];
         freeTableCopyFF.freeEntries[i] = Freetable.freeEntries[i];
         freeTableCopyNF.freeEntries[i] = Freetable.freeEntries[i];
     }
 
-    //creating a copy of the process address table instance
-    ProcessAddrTable AddrTableCopyWF;
+    // Copy the ProcessAddrTable for the various algorithms
+    AddrTableCopyBF.capacity = AddrTable.capacity;
     AddrTableCopyWF.capacity = AddrTable.capacity;
-
-    //creating a copy of the process address table instance
-    ProcessAddrTable AddrTableCopyFF;
     AddrTableCopyFF.capacity = AddrTable.capacity;
-
-    //creating a copy of the process address table instance
-    ProcessAddrTable AddrTableCopyNF;
     AddrTableCopyNF.capacity = AddrTable.capacity;
 
-    // Copy each FreeEntry
+    // Copy each ProcessAddrEntry
     for (int i = 0; i < AddrTable.capacity; i++) {
+        AddrTableCopyBF.ProcessAddrEntries[i] = AddrTable.ProcessAddrEntries[i];
         AddrTableCopyWF.ProcessAddrEntries[i] = AddrTable.ProcessAddrEntries[i];
         AddrTableCopyFF.ProcessAddrEntries[i] = AddrTable.ProcessAddrEntries[i];
         AddrTableCopyNF.ProcessAddrEntries[i] = AddrTable.ProcessAddrEntries[i];
     }
-    
+
+    printf("Memory After half of the processea have been allocated randomly: \n");
+    printMemory(memory);
+   
+    printf("Free Table after half of the processes have been allocated randomly \n");
     printFreeTable(&Freetable);
 
+    printf("Process Address Table after half of the processes have been allocated randomly \n");
     printProcessAddrTable(&AddrTable);
 
 
-    // printf("\n\n\n Testing Best Fit Algorithm \n");
+    //testing algorithms
+    printf("\n\n\n Testing Best Fit Algorithm \n");
+    printf("-----------------------------\n");
 
-    // int proc_idx;
-    // for (proc_idx = num_of_processes/2; proc_idx < num_of_processes; proc_idx++){
-    //     implementBestFit(memory, &Freetable, &AddrTable, processes_in_memory[proc_idx], best_fit_processes, &best_fit_num_processes); 
-    // }
+    for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes; proc_idx++){
+        implementBestFit(BFmemoryCopy, &freeTableCopyBF, &AddrTableCopyBF, processes_in_memory[proc_idx], best_fit_processes, &best_fit_num_processes); 
+    }
 
-    // printf("Memory After a Process has been allocated using the allocation function: \n");
-    // printMemory(memory);
+    printf("Memory After a Process has been allocated using the best fit allocation function: \n");
+    printMemory(BFmemoryCopy);
 
-    // printAllProcesses(best_fit_processes, best_fit_num_processes);
-    // printf("\n");
+    printAllProcesses(best_fit_processes, best_fit_num_processes);
+    printf("\n");
 
-    // printProcessAddrTable(&AddrTable);
+    printProcessAddrTable(&AddrTableCopyBF);
 
-    // printFreeTable(&Freetable);
+    printFreeTable(&freeTableCopyBF);
 
-
-
-    // printf("\n\n\n Testing Worst Fit Algorithm \n");
-
-    // printf("Memory After a Process has been allocated randomly: \n");
-    // printMemory(WFmemoryCopy);
     
-    // int process_idx;
-    // for (process_idx = num_of_processes/2; process_idx < num_of_processes;  process_idx++){
-    //     implementWorstFit(WFmemoryCopy, &freeTableCopyWF, &AddrTableCopyWF, processes_in_memory[process_idx], worst_fit_processes, &worst_fit_num_processes); 
-    // }
+    printf("\n\n\n Testing Worst Fit Algorithm \n");
+    printf("-----------------------------\n");
 
-    // printf("Memory After a Process has been allocated using the allocation function: \n");
-    // printMemory(WFmemoryCopy);
+    for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
+        implementWorstFit(WFmemoryCopy, &freeTableCopyWF, &AddrTableCopyWF, processes_in_memory[proc_idx], worst_fit_processes, &worst_fit_num_processes); 
+    }
 
-    // printAllProcesses(worst_fit_processes, worst_fit_num_processes);
-    // printf("\n");
+    printf("Memory After a Process has been allocated using the allocation function: \n");
+    printMemory(WFmemoryCopy);
 
-    // printProcessAddrTable(&AddrTableCopyWF);
+    printAllProcesses(worst_fit_processes, worst_fit_num_processes);
+    printf("\n");
 
-    // printFreeTable(&freeTableCopyWF);
+    printProcessAddrTable(&AddrTableCopyWF);
 
+    printFreeTable(&freeTableCopyWF);
 
-
+    
     printf("\n\n\n Testing First Fit Algorithm \n");
-
-    printf("Memory After a Process has been allocated randomly: \n");
-    printMemory(FFmemoryCopy);
+    printf("-----------------------------\n");
     
-    int process_idx;
-    for (process_idx = num_of_processes/2; process_idx < num_of_processes;  process_idx++){
-        implementFirstFit(FFmemoryCopy, &freeTableCopyFF, &AddrTableCopyFF, processes_in_memory[process_idx], first_fit_processes, &first_fit_num_processes); 
+    for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
+        implementFirstFit(FFmemoryCopy, &freeTableCopyFF, &AddrTableCopyFF, processes_in_memory[proc_idx], first_fit_processes, &first_fit_num_processes); 
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");
@@ -189,17 +196,12 @@ int main(){
 
     printFreeTable(&freeTableCopyFF);
 
-    
-    
-    
+
     printf("\n\n\n Testing Next Fit Algorithm \n");
+    printf("-----------------------------\n");
 
-    printf("Memory After a Process has been allocated randomly: \n");
-    printMemory(WFmemoryCopy);
-    
-
-    for (process_idx = num_of_processes/2; process_idx < num_of_processes;  process_idx++){
-        implementWorstFit(NFmemoryCopy, &freeTableCopyNF, &AddrTableCopyNF, processes_in_memory[process_idx], next_fit_processes, &next_fit_num_processes); 
+    for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
+        implementNextFit(NFmemoryCopy, &freeTableCopyNF, &AddrTableCopyNF, processes_in_memory[proc_idx], &lastAllocatedBlock, next_fit_processes, &next_fit_num_processes); 
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");
@@ -211,7 +213,5 @@ int main(){
     printProcessAddrTable(&AddrTableCopyNF);
 
     printFreeTable(&freeTableCopyNF);
-
-
 
 }
