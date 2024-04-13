@@ -13,7 +13,8 @@ typedef struct {
 Process processes_in_memory[MAX_PROCESSES]; //stores the processes that have made a request for memory to run
 extern int num_of_processes; //stores the number of process currently asking/have received memory
 
+
 Process *getProcessID();
 void createProcess(int process_id, int memory_required, int index);
-void printAllProcesses();
-void shiftProcessesInMemory();
+void printAllProcesses(Process process_arr [], int numProcesses);
+void shiftProcessesInMemory(Process process_arr [], int* numProcesses);

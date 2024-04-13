@@ -1,6 +1,5 @@
 #include "process.h"
 
-
 int num_of_processes = 0; //initialising number of processes currently in the `processes_in_memory` array
 
 /**
@@ -9,7 +8,7 @@ int num_of_processes = 0; //initialising number of processes currently in the `p
  */
 Process *getProcessID(){
     Process *process = (Process *)malloc(sizeof(Process)); //creating a process struct
-    process->pid = fork();
+    process->pid = fork(); //forking a child process
 
     if(process->pid == -1){ //if process failed to fork
         printf("Error creating process\n");
@@ -17,7 +16,7 @@ Process *getProcessID(){
     }
     else if(process->pid == 0){ //if process was successfully forked
         process->pid = getpid();
-        exit(0);
+        exit(0); //exit the child process
     }
     else{
         return process;
@@ -43,10 +42,10 @@ void createProcess(int process_id, int memory_required, int index){
  * The function `printAllProcesses` prints information about each process in memory, including process
  * ID, and memory requirements.
  */
-void printAllProcesses(){
-    for (int i = 0; i < num_of_processes; i++){
-        printf("Process ID: %d\n", processes_in_memory[i].pid);
-        printf("Memory Required: %d\n", processes_in_memory[i].memory_required);
+void printAllProcesses(Process process_arr [], int numProcesses){
+    for (int i = 0; i < numProcesses; i++){
+        printf("Process ID: %d\n", process_arr[i].pid);
+        printf("Memory Required: %d\n", process_arr[i].memory_required);
         printf("\n");
     }
 }
@@ -54,12 +53,14 @@ void printAllProcesses(){
 /**
  * The function `shiftProcessesInMemory` shifts processes in memory by overwriting the first
  * element with subsequent elements in the array to obey the FIFO rule.
+ * This code ensures that when we loop through the array, we only loop until i = capactiy so that we don't
+ * end up looping through the entire array where there might be empty slots
  */
-void shiftProcessesInMemory(){
-    for (int i = 0; i < num_of_processes; i++){
-        processes_in_memory[0] = processes_in_memory[i+1];
+void shiftProcessesInMemory(Process process_arr [], int* numProcesses){
+    for (int i = 0; i < *numProcesses; i++){
+        process_arr[i] = process_arr[i+1]; 
     }
-    num_of_processes -= 1;
+    *numProcesses -= 1;
 }
 
 // int main(){

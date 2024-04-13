@@ -23,10 +23,11 @@ int generateRandomAddress(){
  * @return The function `generateRandomMemorySize` returns a random integer value between 1 and half of
  * the `MEMORY_SIZE` value.
  */
-int generateRandomMemorySize(){
-    int lowerBound = 1;
-    int upperBound = MEMORY_SIZE/4;
-    int randomNumber = (rand() % (upperBound - lowerBound + 1)) + lowerBound;
+int generateRandomMemorySize(int lowerBound, int upperBound){
+    if (upperBound > MEMORY_SIZE/2) {
+        upperBound = MEMORY_SIZE/3;
+    }
+    int randomNumber = (rand() % (upperBound - lowerBound + 1)) + lowerBound; // Generate random number between 1 and less than half of MEMORY_SIZE
     return randomNumber;
 }
 
@@ -99,17 +100,17 @@ void allocateMemory(int memory[], int address, int size){
  * structure or object of type `FreeTable`. This structure contains information about the free
  * memory blocks available in the system, such as the starting address and size of each free block. 
  */
-void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* freeTable){
-    int memory_address = addrTable->ProcessAddrEntries[0].base;
-    int memory_size = processes_in_memory[0].memory_required;
-    shiftProcessAddrEntries(addrTable);
-    shiftFreeTableEntries(freeTable, 0);
-    shiftProcessesInMemory();
+void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* freeTable, Process process_arr [], int* numProcesses){
+    int memory_address = addrTable->ProcessAddrEntries[0].base; //get the base address of the oldest process
+    int memory_size = process_arr[0].memory_required;
+    shiftProcessAddrEntries(addrTable); //shift the process address table entries to eliminate the first process
+    shiftProcessesInMemory(process_arr, numProcesses); //shift the processes in memory to eliminate the first process
     freeTable->capacity = 0;
     for (int i = memory_address; i < memory_address + memory_size; i++){
         memory[i] = 0;
     }
     addToFreeTable(memory, freeTable); //come back here
+    printf("Memory deallocated for process %d\n", process_arr[0].pid);
 }
 
 /**
@@ -338,7 +339,7 @@ void printProcessAddrTable(ProcessAddrTable* addrTable){
  * process in memory with its base address and process ID. The `capacity` field indicates the total
  * number of entries that can be stored in the address table
  */
-void compactMemory(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable){
+void compactMemory(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process_arr [], int numProcesses){
     int writeIndex = 0;
     ProcessAddrEntry* sortedArray = malloc(addrTable->capacity * sizeof(ProcessAddrEntry));
     memcpy(sortedArray, addrTable->ProcessAddrEntries, addrTable->capacity * sizeof(ProcessAddrEntry));
@@ -355,10 +356,10 @@ void compactMemory(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTab
 
     int currAddress = 0;
     int index = 0;
-    for (int i = 0; i < num_of_processes; i++){
-        index = findIndex(sortedArray[i].pid);
+    for (int i = 0; i < numProcesses; i++){
+        index = findIndex(process_arr, numProcesses, sortedArray[i].pid);
         addrTable->ProcessAddrEntries[index].base = currAddress;
-        currAddress += processes_in_memory[index].memory_required;
+        currAddress += process_arr[index].memory_required;
     }
     freeTable->capacity = 0;
     addToFreeTable(memory, freeTable);
@@ -398,9 +399,9 @@ int compare(const void* a, const void* b){
  * `processes_in_memory` array if it is found. If the value is not found in the array, the function
  * returns -1.
  */
-int findIndex(int value) {
-    for (int i = 0; i < num_of_processes; i++) {
-        if (processes_in_memory[i].pid == value) {
+int findIndex(Process process_arr [], int numProcesses, int value) {
+    for (int i = 0; i < numProcesses; i++) {
+        if (process_arr[i].pid == value) {
             return i;  // Return the index if the value is found
         }
     }

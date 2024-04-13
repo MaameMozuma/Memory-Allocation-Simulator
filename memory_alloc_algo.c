@@ -33,8 +33,9 @@ void allocateProcessSpace(int memory[], Process process, int address){
  * free memory block with a start address and size.
  * @param process The `process` structure is a process with start address and size
  */
-void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process){
+void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses){
     int min_fragmentation;
+    int isDeallocated = 0;
     FreeEntry bestFitBlock = {-1, -1};
 
     while (freeTable->capacity > 0){
@@ -72,7 +73,10 @@ void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
         
         }
         else {
-            deallocateMemory(memory, addrTable,freeTable);
+            deallocateMemory(memory, addrTable,freeTable, process_arr, numProcesses);
+            printAllProcesses(process_arr, *numProcesses);
+            printFreeTable(freeTable);
+            printProcessAddrTable(addrTable);
         }    
     }
     printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
@@ -96,7 +100,7 @@ void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
  * 
  * @return void.
  */
-void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process){
+void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses){
     int max_fragmentation;
     FreeEntry worstFitBlock = {-1, -1};
 
@@ -135,31 +139,17 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
         
         }
         else {
-            deallocateMemory(memory, addrTable,freeTable);
+            deallocateMemory(memory, addrTable,freeTable, process_arr, numProcesses);
+            printAllProcesses(process_arr, *numProcesses);
+            printFreeTable(freeTable);
+            printProcessAddrTable(addrTable);
         }    
     }
     printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
 }
 
 
-
-/**
- * The function `implementFirstFit` allocates memory for a process using the First Fit algorithm,
- * finding the first available block that can accomodate the process.
- * 
- *@param memory The `memory` parameter is an array representing the memory blocks available for
- * allocation.
- * @param freeTable The `freeTable` parameter in the `implementFirstFit` function is a pointer to a
- * structure or object of type `FreeTable`.
- * @param addrTable The `addrTable` parameter in the `implementFirstFit` function is of type
- * `ProcessAddrTable*`, which is a pointer to a structure or object representing a table that maps
- * process IDs to their allocated memory addresses. This table is used to keep track of the memory
- * addresses allocated to each process
- * @param process Accepts a process to be allocated memory using the algorithm
- * 
- * @return The function `implementFirstFit` returns void.
- */
-void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process){
+void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses){
     FreeEntry firstFitBlock = {-1, -1};
 
     while(freeTable->capacity > 0){
@@ -199,7 +189,10 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
 
         }
         else {
-            deallocateMemory(memory, addrTable, freeTable);
+            deallocateMemory(memory, addrTable, freeTable, process_arr, numProcesses);
+            printAllProcesses(process_arr, *numProcesses);
+            printFreeTable(freeTable);
+            printProcessAddrTable(addrTable);
         }
     }
     
@@ -208,26 +201,7 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
 }
 
 
-/**
- * The function `implementNextFit` allocates memory for a process using the Next Fit algorithm, searching for the first available block
- * beginning the search from where the last allocation happened.
- * 
- *@param memory The `memory` parameter is an array representing the memory blocks available for
- * allocation.
- * @param freeTable The `freeTable` parameter in the `implementNextFit` function is a pointer to a
- * structure or object of type `FreeTable`.
- * @param addrTable The `addrTable` parameter in the `implementNextFit` function is of type
- * `ProcessAddrTable*`, which is a pointer to a structure or object representing a table that maps
- * process IDs to their allocated memory addresses. This table is used to keep track of the memory
- * addresses allocated to each process
- * @param process Accepts a process to be allocated memory using the algorithm
- * @param lastAllocatedBlock The `lastAllocatedBlock` parameter is a pointer to a `FreeEntry`
- * structure that represents the last block of memory that was allocated to a process. Used in the Next fit algorithm
- * as a note of where to start the search from.
- * 
- * @return The function `implementNextFit` returns void.
- */
-void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock){
+void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock, Process process_arr [], int* numProcesses){
     FreeEntry nextFitBlock = {-1, -1};
     FreeEntry firstFreeBlock; //stores the address of the first block in the free table after the last allocated block
 
@@ -291,7 +265,10 @@ void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
     
         }
         else {
-            deallocateMemory(memory, addrTable, freeTable);
+            deallocateMemory(memory, addrTable, freeTable, process_arr, numProcesses);
+            printAllProcesses(process_arr, *numProcesses);
+            printFreeTable(freeTable);
+            printProcessAddrTable(addrTable);
         }
         
     }

@@ -27,13 +27,13 @@ typedef struct {
 typedef struct {
     int capacity;
     ProcessAddrEntry ProcessAddrEntries[MAX_PROCESS_ADDRESS_TABLE_SIZE];    
-} ProcessAddrTable; //stores a list of the process ids and their start addresses in memory
+} ProcessAddrTable; //stores a list of the process ids and their start addresses in memory (as ProcessAddrEntry)
 
 int generateRandomAddress();
-int generateRandomMemorySize();
+int generateRandomMemorySize(int lowerBound, int upperBound);
 int isMemoryAvailable(int memory[], Process process, int address);
 void allocateMemory(int memory[], int address, int size);
-void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* freeTable);
+void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* freeTable, Process process_arr [], int* numProcesses);
 void allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* addrTable, int process_idx);
 void printMemory(int memory[]);
 void initializeFreeTable(FreeTable* freeTable);
@@ -44,6 +44,6 @@ void initializeProcessAddrTable(ProcessAddrTable* addrTable);
 void addToProccessAddrTable(ProcessAddrTable* addrTable, pid_t pid, int startAddress);
 void shiftProcessAddrEntries(ProcessAddrTable* addrTable);
 void printProcessAddrTable(ProcessAddrTable* addrTable);
-void compactMemory(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable);
+void compactMemory(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process_arr [], int numProcesses);
 int compare(const void* a, const void* b);
-int findIndex(int value);
+int findIndex(Process process_arr [], int numProcesses, int value);
