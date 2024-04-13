@@ -228,7 +228,7 @@ void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
                 nextFitBlock = freeTable->freeEntries[i];
                 // update the last allocated block to the current block
                 lastAllocatedBlock->start_address = nextFitBlock.start_address;
-                lastAllocatedBlock->size = nextFitBlock.size;
+                lastAllocatedBlock->size = process.memory_required;
                 break;
             }
             i = (i + 1) % length; // wrap around back to the beginning if the last block was at the end
