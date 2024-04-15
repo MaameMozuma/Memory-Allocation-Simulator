@@ -1,5 +1,7 @@
 #include "memory_alloc_algo.h"
 #include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
 
 void readNumProcesses(int *num_processes, int max_num_processes) {
     printf("Enter the number of processes (up to %d): ", max_num_processes);
