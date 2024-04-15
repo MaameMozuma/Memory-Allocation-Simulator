@@ -27,8 +27,7 @@ void printSpaceAllocatedToProcess(int memory[], Process process, int address);
  * @param process_arr The array of all processes.
  * @param numProcesses The number of processes in the process array.
  */
-void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses);
-
+void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses, int isCompact);
 /**
  * This function searches for the largest free memory block that can accommodate the process.
  * It then allocates the memory block to the process and updates the free table and process address table accordingly.
@@ -40,7 +39,7 @@ void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
  * @param process_arr The array of all processes.
  * @param numProcesses The number of processes in the system.
  */
-void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses);
+void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses, int isCompact);
 
 /**
  * This function searches for the first available memory block that can accommodate the process.
@@ -53,7 +52,7 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
  * @param process_arr The array of all processes in the system.
  * @param numProcesses The number of processes in the system.
  */
-void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses);
+void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses, int isCompact);
 
 /**
  * This function allocates memory for a process using the Next Fit algorithm.
@@ -68,4 +67,4 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
  * @param process_arr The array of all processes.
  * @param numProcesses The number of processes in the system.
  */
-void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock, Process process_arr [], int* numProcesses);
+void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock, Process process_arr [], int* numProcesses, int isCompact);

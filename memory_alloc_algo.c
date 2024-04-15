@@ -4,7 +4,7 @@ void printSpaceAllocatedToProcess(int memory[], Process process, int address){
     printf("Process %d of size %d allocated at address %d\n", process.pid, process.memory_required, address);
 }
 
-void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses){
+void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses, int isCompact){
     int min_fragmentation;
     FreeEntry bestFitBlock = {-1, -1};
 
@@ -44,6 +44,9 @@ void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
         }
         else { //if no block was found, deallocate memory and print the current state of the system
             deallocateMemory(memory, addrTable,freeTable, process_arr, numProcesses);
+            if (isCompact == 1){
+                compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
+            }
             printAllProcesses(process_arr, *numProcesses);
             printFreeTable(freeTable);
             printProcessAddrTable(addrTable);
@@ -52,7 +55,7 @@ void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
     printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
 }
 
-void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses){
+void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses, int isCompact){
     int max_fragmentation;
     FreeEntry worstFitBlock = {-1, -1};
 
@@ -92,6 +95,9 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
         }
         else { //if no block was found, deallocate memory and print the current state of the system
             deallocateMemory(memory, addrTable,freeTable, process_arr, numProcesses);
+            if (isCompact == 1){
+                compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
+            }
             printAllProcesses(process_arr, *numProcesses);
             printFreeTable(freeTable);
             printProcessAddrTable(addrTable);
@@ -100,7 +106,7 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
     printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
 }
 
-void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses){
+void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses, int isCompact){
     FreeEntry firstFitBlock = {-1, -1};
 
     while(freeTable->capacity > 0){//check if the free table is not empty
@@ -137,6 +143,9 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
         }
         else {//if no block was found, deallocate memory and print the current state of the system
             deallocateMemory(memory, addrTable, freeTable, process_arr, numProcesses);
+            if (isCompact == 1){
+                compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
+            }
             printAllProcesses(process_arr, *numProcesses);
             printFreeTable(freeTable);
             printProcessAddrTable(addrTable);
@@ -147,7 +156,7 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
    
 }
 
-void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock, Process process_arr [], int* numProcesses){
+void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock, Process process_arr [], int* numProcesses, int isCompact){
     FreeEntry nextFitBlock = {-1, -1};
     FreeEntry firstFreeBlock; //stores the address of the first block in the free table after the last allocated block
 
@@ -212,6 +221,9 @@ void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
         }
         else {
             deallocateMemory(memory, addrTable, freeTable, process_arr, numProcesses);
+            if (isCompact == 1){
+                compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
+            }
             printAllProcesses(process_arr, *numProcesses);
             printFreeTable(freeTable);
             printProcessAddrTable(addrTable);

@@ -11,7 +11,6 @@ int generateRandomAddress(){
     return randomNumber;
 }
 
-
 int generateRandomMemorySize(int lowerBound, int upperBound){
     if (upperBound > MEMORY_SIZE/2) {
         upperBound = MEMORY_SIZE/3;
@@ -19,7 +18,6 @@ int generateRandomMemorySize(int lowerBound, int upperBound){
     int randomNumber = (rand() % (upperBound - lowerBound + 1)) + lowerBound; // Generate random number between 1 and less than half of MEMORY_SIZE
     return randomNumber;
 }
-
 
 int isMemoryAvailable(int memory[], Process process, int address){
     // Check if the address plus memory required exceeds memory size
@@ -43,12 +41,10 @@ void allocateMemory(int memory[], int address, int size){
     }
 }
 
-
 void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* freeTable, Process process_arr [], int* numProcesses){
     int memory_address = addrTable->ProcessAddrEntries[0].base; //get the base address of the oldest process
     int memory_size = process_arr[0].memory_required;
-
-    printf("Memory deallocated for process %d\n", process_arr[0].pid);
+    int process_id = process_arr[0].pid;
 
     //eliminate first process from address table and processes in memory
     shiftProcessAddrEntries(addrTable);
@@ -59,8 +55,9 @@ void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* free
         memory[i] = 0;
     }
     addToFreeTable(memory, freeTable);
-}
 
+    printf("Memory deallocated for process %d\n", process_id);
+}
 
 void allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* addrTable, int process_idx){
     int address;
@@ -89,7 +86,6 @@ void allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* ad
     }
 }
 
-
 void printMemory(int memory[]){
     printf("Physical Memory: \n");
     printf("+-----------------+--------+\n");
@@ -101,7 +97,6 @@ void printMemory(int memory[]){
     printf("+-----------------+--------+\n");
 }
 
-
 void initializeFreeTable(FreeTable* freeTable){
     freeTable->capacity = 0;
 
@@ -110,7 +105,6 @@ void initializeFreeTable(FreeTable* freeTable){
         freeTable->freeEntries[i].size = -1;
     }
 }
-
 
 void addToFreeTable(int memory[], FreeTable* freeTable){
     int startAddress = -1;
@@ -137,7 +131,6 @@ void addToFreeTable(int memory[], FreeTable* freeTable){
     }
 
 }
-
 
 void shiftFreeTableEntries(FreeTable* freeTable, int index){
     // moving the entries in the free table to the left
@@ -169,8 +162,6 @@ void initializeProcessAddrTable(ProcessAddrTable* addrTable){
     }
 
 }
-
-
 
 void addToProccessAddrTable(ProcessAddrTable* addrTable, pid_t pid, int startAddress){
     addrTable->ProcessAddrEntries[addrTable->capacity].pid = pid;
@@ -221,19 +212,21 @@ void compactMemory(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTab
     }
 
     int currAddress = 0;
-    int index = 0;
-    for (int i = 0; i < numProcesses; i++){
-        // update the base address of each process in the process address table
-        index = findIndex(process_arr, numProcesses, sortedArray[i].pid);
-        addrTable->ProcessAddrEntries[index].base = currAddress;
-        currAddress += process_arr[index].memory_required;
+    int processIndex = 0;
+    printf("Number of processes in compaction %d\n", numProcesses);
+    for (int i = 0; i < numProcesses; i++) {
+        int processIndex = findIndex(process_arr, numProcesses, sortedArray[i].pid);
+        if (processIndex != -1) {
+            int mem_required = process_arr[processIndex].memory_required;
+            process_arr[processIndex].pid = sortedArray[i].pid;
+            addrTable->ProcessAddrEntries[processIndex].base = currAddress;
+            currAddress += mem_required;
+        }
     }
     freeTable->capacity = 0;
     addToFreeTable(memory, freeTable);
     free(sortedArray);
 }
-
-
 
 int compare(const void* a, const void* b){
     ProcessAddrEntry* entryA = (ProcessAddrEntry*) a;
@@ -241,8 +234,6 @@ int compare(const void* a, const void* b){
 
     return entryA->base - entryB->base;
 }
-
-
 
 int findIndex(Process process_arr [], int numProcesses, int value) {
     for (int i = 0; i < numProcesses; i++) {
@@ -252,4 +243,3 @@ int findIndex(Process process_arr [], int numProcesses, int value) {
     }
     return -1;  // Return -1 if the value is not found
 }
-

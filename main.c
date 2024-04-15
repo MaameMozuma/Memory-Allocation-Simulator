@@ -69,7 +69,7 @@ int main(){
 
     createParentProcess(process, 1, 5); //creating the parent process
 
-    createAdditionalProcesses(process, processes_in_memory, num_processes, 2, 7); //creating the additional processes
+    createAdditionalProcesses(process, processes_in_memory, num_processes, 5, 15); //creating the additional processes
 
     printAllProcesses(processes_in_memory, num_of_processes); //printing all the processes in memory
 
@@ -81,10 +81,10 @@ int main(){
     Process first_fit_processes[MAX_PROCESSES];
     Process next_fit_processes[MAX_PROCESSES];
 
-    memcpy(best_fit_processes, processes_in_memory, sizeof(processes_in_memory));
-    memcpy(worst_fit_processes, processes_in_memory, sizeof(processes_in_memory));
-    memcpy(first_fit_processes, processes_in_memory, sizeof(processes_in_memory));
-    memcpy(next_fit_processes, processes_in_memory, sizeof(processes_in_memory));
+    memcpy(best_fit_processes, processes_in_memory, num_of_processes * sizeof(Process));
+    memcpy(worst_fit_processes, processes_in_memory, num_of_processes * sizeof(Process));
+    memcpy(first_fit_processes, processes_in_memory, num_of_processes * sizeof(Process));
+    memcpy(next_fit_processes, processes_in_memory, num_of_processes * sizeof(Process));
 
     //allocate memory for the first half of the processes randomly
     for (int i = 0; i < num_of_processes/2; i++){
@@ -141,13 +141,16 @@ int main(){
     printf("Process Address Table after half of the processes have been allocated randomly \n");
     printProcessAddrTable(&AddrTable);
 
+    printf("the best fit process array\n");
+    printAllProcesses(best_fit_processes, best_fit_num_processes);
 
-    //testing algorithms
+
+    // //testing algorithms
     printf("\n\n\n Testing Best Fit Algorithm \n");
     printf("-----------------------------\n");
 
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes; proc_idx++){
-        implementBestFit(BFmemoryCopy, &freeTableCopyBF, &AddrTableCopyBF, processes_in_memory[proc_idx], best_fit_processes, &best_fit_num_processes); 
+        implementBestFit(BFmemoryCopy, &freeTableCopyBF, &AddrTableCopyBF, processes_in_memory[proc_idx], best_fit_processes, &best_fit_num_processes, 1); 
     }
 
     printf("Memory After a Process has been allocated using the best fit allocation function: \n");
@@ -165,7 +168,7 @@ int main(){
     printf("-----------------------------\n");
 
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
-        implementWorstFit(WFmemoryCopy, &freeTableCopyWF, &AddrTableCopyWF, processes_in_memory[proc_idx], worst_fit_processes, &worst_fit_num_processes); 
+        implementWorstFit(WFmemoryCopy, &freeTableCopyWF, &AddrTableCopyWF, processes_in_memory[proc_idx], worst_fit_processes, &worst_fit_num_processes, 1); 
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");
@@ -183,7 +186,7 @@ int main(){
     printf("-----------------------------\n");
     
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
-        implementFirstFit(FFmemoryCopy, &freeTableCopyFF, &AddrTableCopyFF, processes_in_memory[proc_idx], first_fit_processes, &first_fit_num_processes); 
+        implementFirstFit(FFmemoryCopy, &freeTableCopyFF, &AddrTableCopyFF, processes_in_memory[proc_idx], first_fit_processes, &first_fit_num_processes, 1); 
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");
@@ -201,7 +204,7 @@ int main(){
     printf("-----------------------------\n");
 
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
-        implementNextFit(NFmemoryCopy, &freeTableCopyNF, &AddrTableCopyNF, processes_in_memory[proc_idx], &lastAllocatedBlock, next_fit_processes, &next_fit_num_processes); 
+        implementNextFit(NFmemoryCopy, &freeTableCopyNF, &AddrTableCopyNF, processes_in_memory[proc_idx], &lastAllocatedBlock, next_fit_processes, &next_fit_num_processes, 1); 
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");
