@@ -2,6 +2,9 @@
 
 int num_of_processes = 0; //initialising number of processes currently in the `processes_in_memory` array
 
+int num_of_processes = 0; //initialising number of processes currently in the `processes_in_memory` array
+Process processes_in_memory[MAX_PROCESSES];
+
 Process *getProcessID(){
     Process *process = (Process *)malloc(sizeof(Process)); //creating a process struct
     process->pid = fork(); //forking a child process

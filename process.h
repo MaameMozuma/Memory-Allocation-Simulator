@@ -13,7 +13,7 @@ typedef struct {
     int memory_required;  // Memory required by the process
 } Process;
 
-Process processes_in_memory[MAX_PROCESSES]; //stores all processes that have been successfully created
+extern Process processes_in_memory[MAX_PROCESSES]; //stores all processes that have been successfully created
 extern int num_of_processes; //stores the number of processes currently in the `processes_in_memory` array
 
 /**
