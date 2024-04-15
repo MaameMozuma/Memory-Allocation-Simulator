@@ -1,4 +1,5 @@
 CC = gcc
+CFLAGS = -w
 SRC = process.c utils.c memory_alloc_algo.c main.c
 OBJ = $(SRC:.c=.o)
 EXEC = memorySimulation
@@ -6,10 +7,10 @@ EXEC = memorySimulation
 all: $(EXEC)
 
 $(EXEC): $(OBJ)
-	$(CC) $(OBJ) -o $(EXEC)
+	$(CC) $(CFLAGS) $(OBJ) -o $(EXEC)
 
 %.o: %.c
-	$(CC) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJ) $(EXEC)
