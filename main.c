@@ -65,10 +65,11 @@ int main(){
     ProcessAddrTable AddrTableCopyNF;
     FreeEntry lastAllocatedBlock = {-1, -1};
     int best_fit_num_processes, worst_fit_num_processes, first_fit_num_processes, next_fit_num_processes;
+    int isCompact;
 
     srand(time(NULL)); // Seed the random number generator
 
-    printf("Memory Initially: \n");
+    printf("------Starting simulation------\n");
     printMemory(memory);
 
     // Prompt the user to enter a value for MAX_PROCESSES
@@ -80,6 +81,11 @@ int main(){
     #define MAX_PROCESSES maxProcesses
 
     readNumProcesses(&num_processes, maxProcesses); //reading the number of processes from the user
+
+    // Prompt user for compaction
+    printf("Enter 1 to simulate with compaction, 0 otherwise: ");
+    scanf("%d", &isCompact);
+    printf("\n");
 
     initialize(&Freetable, &AddrTable); //initialising the free table and the process address table
 
@@ -148,34 +154,34 @@ int main(){
         AddrTableCopyNF.ProcessAddrEntries[i] = AddrTable.ProcessAddrEntries[i];
     }
 
-    printf("Memory After half of the processea have been allocated randomly: \n");
+    printf("Status after random allocations \n");
     printMemory(memory);
+    printf("\n");
    
-    printf("Free Table after half of the processes have been allocated randomly \n");
-    printFreeTable(&Freetable);
 
-    printf("Process Address Table after half of the processes have been allocated randomly \n");
+    printFreeTable(&Freetable);
+    printf("\n");
+
     printProcessAddrTable(&AddrTable);
 
-    printf("the best fit process array\n");
-    printAllProcesses(best_fit_processes, best_fit_num_processes);
 
-
-    // //testing algorithms
+    //Running algorithms
     printf("\n\n\n Testing Best Fit Algorithm \n");
     printf("-----------------------------\n");
 
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes; proc_idx++){
-        implementBestFit(BFmemoryCopy, &freeTableCopyBF, &AddrTableCopyBF, processes_in_memory[proc_idx], best_fit_processes, &best_fit_num_processes, 0); 
+        implementBestFit(BFmemoryCopy, &freeTableCopyBF, &AddrTableCopyBF, processes_in_memory[proc_idx], best_fit_processes, &best_fit_num_processes, isCompact); 
     }
 
-    printf("Memory After a Process has been allocated using the best fit allocation function: \n");
+    printf("\nStatus after using the best fit allocation algorithm \n");
     printMemory(BFmemoryCopy);
+    printf("\n");
 
     printAllProcesses(best_fit_processes, best_fit_num_processes);
     printf("\n");
 
     printProcessAddrTable(&AddrTableCopyBF);
+    printf("\n");
 
     printFreeTable(&freeTableCopyBF);
 
@@ -184,16 +190,18 @@ int main(){
     printf("-----------------------------\n");
 
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
-        implementWorstFit(WFmemoryCopy, &freeTableCopyWF, &AddrTableCopyWF, processes_in_memory[proc_idx], worst_fit_processes, &worst_fit_num_processes, 0); 
+        implementWorstFit(WFmemoryCopy, &freeTableCopyWF, &AddrTableCopyWF, processes_in_memory[proc_idx], worst_fit_processes, &worst_fit_num_processes, isCompact); 
     }
 
-    printf("Memory After a Process has been allocated using the allocation function: \n");
+    printf("\nStatus after using the worst fit allocation algorithm \n");
     printMemory(WFmemoryCopy);
+    printf("\n");
 
     printAllProcesses(worst_fit_processes, worst_fit_num_processes);
     printf("\n");
 
     printProcessAddrTable(&AddrTableCopyWF);
+    printf("\n");
 
     printFreeTable(&freeTableCopyWF);
 
@@ -202,16 +210,18 @@ int main(){
     printf("-----------------------------\n");
     
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
-        implementFirstFit(FFmemoryCopy, &freeTableCopyFF, &AddrTableCopyFF, processes_in_memory[proc_idx], first_fit_processes, &first_fit_num_processes, 0); 
+        implementFirstFit(FFmemoryCopy, &freeTableCopyFF, &AddrTableCopyFF, processes_in_memory[proc_idx], first_fit_processes, &first_fit_num_processes, isCompact); 
     }
 
-    printf("Memory After a Process has been allocated using the allocation function: \n");
+    printf("\nStatus after using the first fit allocation algorithm \n");
     printMemory(FFmemoryCopy);
+    printf("\n");
 
     printAllProcesses(first_fit_processes, first_fit_num_processes);
     printf("\n");
 
     printProcessAddrTable(&AddrTableCopyFF);
+    printf("\n");
 
     printFreeTable(&freeTableCopyFF);
 
@@ -220,16 +230,18 @@ int main(){
     printf("-----------------------------\n");
 
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
-        implementNextFit(NFmemoryCopy, &freeTableCopyNF, &AddrTableCopyNF, processes_in_memory[proc_idx], &lastAllocatedBlock, next_fit_processes, &next_fit_num_processes, 0); 
+        implementNextFit(NFmemoryCopy, &freeTableCopyNF, &AddrTableCopyNF, processes_in_memory[proc_idx], &lastAllocatedBlock, next_fit_processes, &next_fit_num_processes, isCompact); 
     }
 
-    printf("Memory After a Process has been allocated using the allocation function: \n");
+    printf("\nStatus after using the next fit allocation algorithm \n");
     printMemory(NFmemoryCopy);
+    printf("\n");
 
     printAllProcesses(next_fit_processes, next_fit_num_processes);
     printf("\n");
 
     printProcessAddrTable(&AddrTableCopyNF);
+    printf("\n");
 
     printFreeTable(&freeTableCopyNF);
 

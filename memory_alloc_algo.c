@@ -47,9 +47,6 @@ void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
             if (isCompact == 1){
                 compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
             }
-            printAllProcesses(process_arr, *numProcesses);
-            printFreeTable(freeTable);
-            printProcessAddrTable(addrTable);
         }    
     }
     printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
@@ -98,9 +95,6 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
             if (isCompact == 1){
                 compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
             }
-            printAllProcesses(process_arr, *numProcesses);
-            printFreeTable(freeTable);
-            printProcessAddrTable(addrTable);
         }    
     }
     printf("Unable to allocate process %d with size %d. No appropriate memory block found.\n", process.pid, process.memory_required);
@@ -146,9 +140,6 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
             if (isCompact == 1){
                 compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
             }
-            printAllProcesses(process_arr, *numProcesses);
-            printFreeTable(freeTable);
-            printProcessAddrTable(addrTable);
         }
     }
     
@@ -224,9 +215,6 @@ void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
             if (isCompact == 1){
                 compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
             }
-            printAllProcesses(process_arr, *numProcesses);
-            printFreeTable(freeTable);
-            printProcessAddrTable(addrTable);
         }
         
     }

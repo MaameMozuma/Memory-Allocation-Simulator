@@ -170,7 +170,7 @@ void addToProccessAddrTable(ProcessAddrTable* addrTable, pid_t pid, int startAdd
 }
 
 void shiftProcessAddrEntries(ProcessAddrTable* addrTable){
-    // mobing the entries in the process address table to the left
+    // moving the entries in the process address table to the left
     for (int i = 0; i < addrTable->capacity; i++){
         addrTable->ProcessAddrEntries[i] = addrTable->ProcessAddrEntries[i+1];
     }
@@ -213,7 +213,6 @@ void compactMemory(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTab
 
     int currAddress = 0;
     int processIndex = 0;
-    printf("Number of processes in compaction %d\n", numProcesses);
     for (int i = 0; i < numProcesses; i++) {
         int processIndex = findIndex(process_arr, numProcesses, sortedArray[i].pid);
         if (processIndex != -1) {

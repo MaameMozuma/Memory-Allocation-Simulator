@@ -26,6 +26,7 @@ void printSpaceAllocatedToProcess(int memory[], Process process, int address);
  * @param process The process to be allocated memory.
  * @param process_arr The array of all processes.
  * @param numProcesses The number of processes in the process array.
+ * @param isCompact A flag indicating whether the memory should be compacted after deallocation.
  */
 void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses, int isCompact);
 /**
@@ -38,6 +39,7 @@ void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
  * @param process The process to be allocated.
  * @param process_arr The array of all processes.
  * @param numProcesses The number of processes in the system.
+ * @param isCompact A flag indicating whether the memory should be compacted after deallocation.
  */
 void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses, int isCompact);
 
@@ -51,6 +53,7 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
  * @param process The process to be allocated memory.
  * @param process_arr The array of all processes in the system.
  * @param numProcesses The number of processes in the system.
+ * @param isCompact A flag indicating whether the memory should be compacted after deallocation.
  */
 void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, Process process_arr [], int* numProcesses, int isCompact);
 
@@ -66,5 +69,6 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
  * @param lastAllocatedBlock The last allocated memory block.
  * @param process_arr The array of all processes.
  * @param numProcesses The number of processes in the system.
+ * @param isCompact A flag indicating whether the memory should be compacted after deallocation.
  */
 void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock, Process process_arr [], int* numProcesses, int isCompact);

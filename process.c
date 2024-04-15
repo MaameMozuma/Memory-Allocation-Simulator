@@ -23,11 +23,10 @@ void createProcess(int process_id, int memory_required, int index){
     processes_in_memory[index].pid = process_id;
     processes_in_memory[index].memory_required = memory_required;
     num_of_processes += 1;
-    printf("Process created with PID: %d and memory required: %d\n", processes_in_memory[index].pid, processes_in_memory[index].memory_required);
 }
 
 void printAllProcesses(Process process_arr [], int numProcesses){
-    printf("Number of Processes currently in memory: %d\n", numProcesses);
+    printf("Processes in memory:\n");
     printf("+---------------+---------------+\n");
     printf("| Process ID    | Memory Request|\n");
     printf("+---------------+---------------+\n");
