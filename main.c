@@ -32,7 +32,23 @@ void createAdditionalProcesses(Process* process, Process process_arr[], int num_
     }
 }
 
+void handle_sigsev(int signal) {
+    if (signal == SIGUSR1) {
+        printf("Segmentation fault occurred\n");
+        exit(1);
+    }
+}
+
+void handle_sigint(int signal) {
+    if (signal == SIGINT) {
+        printf("Interrupt signal received\n");
+        exit(1);
+    }
+}
+
 int main(){
+    signal(SIGSEGV, handle_sigsev); // Handle segmentation fault signal
+    signal(SIGINT, handle_sigint); // Handle interrupt signal
     int num_processes;
     int maxProcesses;
     int memory[MEMORY_SIZE] = {0}; // Memory array (0 for free, 1 for allocated)
@@ -150,7 +166,7 @@ int main(){
     printf("-----------------------------\n");
 
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes; proc_idx++){
-        implementBestFit(BFmemoryCopy, &freeTableCopyBF, &AddrTableCopyBF, processes_in_memory[proc_idx], best_fit_processes, &best_fit_num_processes, 1); 
+        implementBestFit(BFmemoryCopy, &freeTableCopyBF, &AddrTableCopyBF, processes_in_memory[proc_idx], best_fit_processes, &best_fit_num_processes, 0); 
     }
 
     printf("Memory After a Process has been allocated using the best fit allocation function: \n");
@@ -168,7 +184,7 @@ int main(){
     printf("-----------------------------\n");
 
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
-        implementWorstFit(WFmemoryCopy, &freeTableCopyWF, &AddrTableCopyWF, processes_in_memory[proc_idx], worst_fit_processes, &worst_fit_num_processes, 1); 
+        implementWorstFit(WFmemoryCopy, &freeTableCopyWF, &AddrTableCopyWF, processes_in_memory[proc_idx], worst_fit_processes, &worst_fit_num_processes, 0); 
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");
@@ -186,7 +202,7 @@ int main(){
     printf("-----------------------------\n");
     
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
-        implementFirstFit(FFmemoryCopy, &freeTableCopyFF, &AddrTableCopyFF, processes_in_memory[proc_idx], first_fit_processes, &first_fit_num_processes, 1); 
+        implementFirstFit(FFmemoryCopy, &freeTableCopyFF, &AddrTableCopyFF, processes_in_memory[proc_idx], first_fit_processes, &first_fit_num_processes, 0); 
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");
@@ -204,7 +220,7 @@ int main(){
     printf("-----------------------------\n");
 
     for (int proc_idx = num_of_processes/2; proc_idx < num_of_processes;  proc_idx++){
-        implementNextFit(NFmemoryCopy, &freeTableCopyNF, &AddrTableCopyNF, processes_in_memory[proc_idx], &lastAllocatedBlock, next_fit_processes, &next_fit_num_processes, 1); 
+        implementNextFit(NFmemoryCopy, &freeTableCopyNF, &AddrTableCopyNF, processes_in_memory[proc_idx], &lastAllocatedBlock, next_fit_processes, &next_fit_num_processes, 0); 
     }
 
     printf("Memory After a Process has been allocated using the allocation function: \n");
