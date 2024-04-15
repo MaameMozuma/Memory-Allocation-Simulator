@@ -7,10 +7,9 @@ EXEC = memorySimulation
 all: $(EXEC)
 
 $(EXEC): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(EXEC)
-
+	$(CC) $(OBJ) -o $(EXEC) $(CFLAGS)
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) -c $< -o $@ $(CFLAGS) 
 
 clean:
 	rm -f $(OBJ) $(EXEC)
