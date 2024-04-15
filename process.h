@@ -1,4 +1,7 @@
-#pragma once
+#ifndef PROCESS_H
+#define PROCESS_H
+
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -41,3 +44,5 @@ void printAllProcesses(Process process_arr [], int numProcesses);
  * @param numProcesses The number of processes in memory.
  */
 void shiftProcessesInMemory(Process process_arr [], int* numProcesses);
+
+#endif

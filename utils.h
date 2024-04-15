@@ -1,4 +1,7 @@
-#pragma once
+#ifndef UTILS_H
+#define UTILS_H
+
+
 #include <stdlib.h>
 #include <time.h> 
 #include "process.h"
@@ -185,3 +188,6 @@ int compare(const void* a, const void* b);
  * @return the index of the found process ID, -1 if not found
  */
 int findIndex(Process process_arr [], int numProcesses, int value);
+
+
+#endif

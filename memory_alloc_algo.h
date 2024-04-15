@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MEMORY_ALLOC_ALGO_H
+#define MEMORY_ALLOC_ALGO_H
+
 #include "utils.h"
 
 extern int best_fit_num_processes; //initialising number of processes currently in the `best_fit_processes` array
@@ -72,3 +74,6 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
  * @param isCompact A flag indicating whether the memory should be compacted after deallocation.
  */
 void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addrTable, Process process, FreeEntry* lastAllocatedBlock, Process process_arr [], int* numProcesses, int isCompact);
+
+
+#endif
