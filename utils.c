@@ -96,17 +96,6 @@ int allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* add
     return allocated;
 }
 
-// void printMemory(int memory[]){
-//     printf("Physical Memory: \n");
-//     printf("+-----------------+--------+\n");
-//     printf("| Memory Address  | Status |\n");
-//     printf("+-----------------+--------+\n");
-//     for (int i = 0; i < MEMORY_SIZE; i++) {
-//         printf("|%-7s0x%-7x |%-7d |\n","", i, memory[i]);
-//     }
-//     printf("+-----------------+--------+\n");
-// }
-
 void printMemory(int memory[]){
     printf("Physical Memory: \n");
     printf("+-----------------+--------+\n");
