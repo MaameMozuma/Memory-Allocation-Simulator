@@ -29,7 +29,10 @@ best fit, worst fit, first fit and next fit using forked processes.
 
 7. Program employs the use of compaction and deallocation to simulate the algorithms effectively 
 
-8. Statistics such as fragmentation, memory utilisation and deallocations are calculated and outputted for each algorithms to end the program. 
+8. Statistics such as fragmentation, memory utilisation and deallocations are calculated and outputted for each algorithms to end the program.
+
+![Alt text](https://github.com/MaameMozuma/Memory-Allocation-Simulator/assets/60921784/07fbe9ca-87dc-4275-9934-b7f2b4e74ddf "figure An image showing a high level overview of how the various data structures in this program look")
+
 
 ### Running the Simulation
 
