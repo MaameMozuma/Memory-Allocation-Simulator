@@ -285,7 +285,6 @@ void fragmentationStats(int *value, FreeTable* freeTable){
 
 void increaseNumDeallocations(int *value){
     if (*value == -1){
-        printf("\nhere\n");
         *value = 0;
     }
     *value += 1;
