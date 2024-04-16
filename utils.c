@@ -4,6 +4,11 @@ int wf_fragmentation = -1;
 int ff_fragmentation = -1; 
 int nf_fragmentation = -1; 
 
+int bf_num_deallocations = -1;
+int wf_num_deallocations = -1;
+int ff_num_deallocations = -1;
+int nf_num_deallocations = -1;
+
 int generateRandomAddress(){
     // Define the range for the random number
     int lowerBound = 0;
@@ -52,7 +57,7 @@ void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* free
 
     //eliminate first process from address table and processes in memory
     shiftProcessAddrEntries(addrTable);
-    shiftProcessesInMemory(process_arr, numProcesses); 
+    shiftProcessesInMemory(process_arr, numProcesses, 0); 
 
     freeTable->capacity = 0;
     for (int i = memory_address; i < memory_address + memory_size; i++){
@@ -63,7 +68,7 @@ void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* free
     printf("Memory deallocated for process %d\n", process_id);
 }
 
-void allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* addrTable, int process_idx){
+int allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* addrTable, int process_idx){
     int address;
     int num_attemps = 0;
     int allocated = 0; //0 == False, 1 == True
@@ -88,16 +93,35 @@ void allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* ad
     if (allocated == 0) {
         printf("Unable to allocate memory for process %d after %d attempts\n", process.pid, num_attemps);
     }
+    return allocated;
 }
+
+// void printMemory(int memory[]){
+//     printf("Physical Memory: \n");
+//     printf("+-----------------+--------+\n");
+//     printf("| Memory Address  | Status |\n");
+//     printf("+-----------------+--------+\n");
+//     for (int i = 0; i < MEMORY_SIZE; i++) {
+//         printf("|%-7s0x%-7x |%-7d |\n","", i, memory[i]);
+//     }
+//     printf("+-----------------+--------+\n");
+// }
 
 void printMemory(int memory[]){
     printf("Physical Memory: \n");
     printf("+-----------------+--------+\n");
     printf("| Memory Address  | Status |\n");
     printf("+-----------------+--------+\n");
-    for (int i = 0; i < MEMORY_SIZE; i++) {
-        printf("|%-7s0x%-7x |%-7d |\n","", i, memory[i]);
+    int start = 0;
+    int status = memory[0];
+    for (int i = 1; i < MEMORY_SIZE; i++) {
+        if (memory[i] != status) {
+            printf("|0x%-3x to 0x%-5x |%-7s |\n", start, i-1, status ? "Used" : "Free");
+            start = i;
+            status = memory[i];
+        }
     }
+    printf("|0x%-3x to 0x%-5x |%-7s |\n", start, MEMORY_SIZE-1, status ? "Used" : "Free");
     printf("+-----------------+--------+\n");
 }
 
@@ -257,4 +281,12 @@ void fragmentationStats(int *value, FreeTable* freeTable){
     if(fragmentation > *value){
         *value = fragmentation;
     }
+}
+
+void increaseNumDeallocations(int *value){
+    if (*value == -1){
+        printf("\nhere\n");
+        *value = 0;
+    }
+    *value += 1;
 }

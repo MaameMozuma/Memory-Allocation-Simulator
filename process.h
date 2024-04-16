@@ -42,7 +42,8 @@ void printAllProcesses(Process process_arr [], int numProcesses);
  * The function `shiftProcessesInMemory` shifts all processes in memory to the left by one index.
  * @param process_arr The array of processes in memory.
  * @param numProcesses The number of processes in memory.
+ * @param index The index at which the process will be shifted.
  */
-void shiftProcessesInMemory(Process process_arr [], int* numProcesses);
+void shiftProcessesInMemory(Process process_arr [], int* numProcesses, int index);
 
 #endif

@@ -17,6 +17,11 @@ extern int wf_fragmentation; //initialising the fragmentation for worst fit
 extern int ff_fragmentation; //initialising the fragmentation for first fit
 extern int nf_fragmentation; //initialising the fragmentation for next fit
 
+extern int bf_num_deallocations;
+extern int wf_num_deallocations;
+extern int ff_num_deallocations;
+extern int nf_num_deallocations;
+
 typedef struct {
     int start_address;
     int size;
@@ -91,7 +96,7 @@ void deallocateMemory(int memory[], ProcessAddrTable* addrTable, FreeTable* free
  * @param addrTable a pointer to the process address table
  * @param process_idx the index of the process being allocated in the array
  */
-void allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* addrTable, int process_idx);
+int allocateProcessRandomly(int memory[], Process process, ProcessAddrTable* addrTable, int process_idx);
 
 
 /**
@@ -200,5 +205,7 @@ int findIndex(Process process_arr [], int numProcesses, int value);
  * @param freeTable pointer to the free table maintained by the algorithm
 */
 void fragmentationStats(int *value, FreeTable* freeTable); //function to print the fragmentation statistics
+
+void increaseNumDeallocations(int *value);
 
 #endif

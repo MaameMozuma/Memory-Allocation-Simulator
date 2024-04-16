@@ -37,8 +37,8 @@ void printAllProcesses(Process process_arr [], int numProcesses){
     printf("+---------------+---------------+\n");
 }
 
-void shiftProcessesInMemory(Process process_arr [], int* numProcesses){
-    for (int i = 0; i < *numProcesses; i++){
+void shiftProcessesInMemory(Process process_arr [], int* numProcesses, int index){
+    for (int i = index; i < *numProcesses; i++){
         process_arr[i] = process_arr[i+1]; 
     }
     *numProcesses -= 1;

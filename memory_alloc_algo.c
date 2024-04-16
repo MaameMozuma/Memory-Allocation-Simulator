@@ -1,5 +1,6 @@
 #include "memory_alloc_algo.h"
 
+
 void printSpaceAllocatedToProcess(int memory[], Process process, int address){
     printf("Process %d of size %d allocated at address %d\n", process.pid, process.memory_required, address);
 }
@@ -45,6 +46,7 @@ void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
         }
         else { //if no block was found, deallocate memory and print the current state of the system
             deallocateMemory(memory, addrTable,freeTable, process_arr, numProcesses);
+            increaseNumDeallocations(&bf_num_deallocations);
             if (isCompact == 1){
                 compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
             }
@@ -94,6 +96,7 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
         }
         else { //if no block was found, deallocate memory and print the current state of the system
             deallocateMemory(memory, addrTable,freeTable, process_arr, numProcesses);
+            increaseNumDeallocations(&wf_num_deallocations);
             if (isCompact == 1){
                 compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
             }
@@ -140,6 +143,7 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
         }
         else {//if no block was found, deallocate memory and print the current state of the system
             deallocateMemory(memory, addrTable, freeTable, process_arr, numProcesses);
+            increaseNumDeallocations(&ff_num_deallocations);
             if (isCompact == 1){
                 compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
             }
@@ -216,6 +220,7 @@ void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
         }
         else {
             deallocateMemory(memory, addrTable, freeTable, process_arr, numProcesses);
+            increaseNumDeallocations(&nf_num_deallocations);
             if (isCompact == 1){
                 compactMemory(memory, freeTable, addrTable, process_arr, *numProcesses);
             }
