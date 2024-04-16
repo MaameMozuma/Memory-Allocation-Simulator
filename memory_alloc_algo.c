@@ -39,6 +39,7 @@ void implementBestFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
                     }
                 }
             }
+            fragmentationStats(&bf_fragmentation, freeTable);
             return;
         
         }
@@ -87,6 +88,7 @@ void implementWorstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
                     }
                 }
             }
+            fragmentationStats(&wf_fragmentation, freeTable);
             return;
         
         }
@@ -132,6 +134,7 @@ void implementFirstFit(int memory[], FreeTable* freeTable, ProcessAddrTable* add
                     }
                 }
             }
+            fragmentationStats(&ff_fragmentation, freeTable);
             return;
 
         }
@@ -207,6 +210,7 @@ void implementNextFit(int memory[], FreeTable* freeTable, ProcessAddrTable* addr
                     }
                 }
             }
+            fragmentationStats(&nf_fragmentation, freeTable);
             return;
     
         }

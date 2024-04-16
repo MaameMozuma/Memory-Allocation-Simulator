@@ -12,6 +12,11 @@
 #define MAX_FREE_TABLE_SIZE 50
 #define MAX_PROCESS_ADDRESS_TABLE_SIZE 50
 
+extern int bf_fragmentation; //initialising the fragmentation for best fit
+extern int wf_fragmentation; //initialising the fragmentation for worst fit
+extern int ff_fragmentation; //initialising the fragmentation for first fit
+extern int nf_fragmentation; //initialising the fragmentation for next fit
+
 typedef struct {
     int start_address;
     int size;
@@ -189,5 +194,11 @@ int compare(const void* a, const void* b);
  */
 int findIndex(Process process_arr [], int numProcesses, int value);
 
+/**
+ * The function tracks the computes the maximum fragmentation statistics for each memory allocation algorithm.
+ * @param value pointer to the fragmentation value
+ * @param freeTable pointer to the free table maintained by the algorithm
+*/
+void fragmentationStats(int *value, FreeTable* freeTable); //function to print the fragmentation statistics
 
 #endif

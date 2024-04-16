@@ -69,6 +69,9 @@ int main(){
     int best_fit_num_processes, worst_fit_num_processes, first_fit_num_processes, next_fit_num_processes;
     int isCompact;
 
+
+    // int bfFragmentation, wfFragmentation, ffFragmentation, nfFragmentation;
+
     srand(time(NULL)); // Seed the random number generator
 
     printf("------Starting simulation------\n");
@@ -167,7 +170,7 @@ int main(){
     printProcessAddrTable(&AddrTable);
 
 
-    //Running algorithms
+    // //Running algorithms
     printf("\n\n\n Testing Best Fit Algorithm \n");
     printf("-----------------------------\n");
 
@@ -246,5 +249,8 @@ int main(){
     printf("\n");
 
     printFreeTable(&freeTableCopyNF);
+
+    printf("Best: %d, Worst: %d, First: %d, Next: %d\n", bf_fragmentation, wf_fragmentation, ff_fragmentation, nf_fragmentation);
+    //printf("Worst %d\n", wf_fragmentation);
 
 }

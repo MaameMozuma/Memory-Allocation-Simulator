@@ -1,4 +1,8 @@
 #include "utils.h"
+int bf_fragmentation = -1; 
+int wf_fragmentation = -1; 
+int ff_fragmentation = -1; 
+int nf_fragmentation = -1; 
 
 int generateRandomAddress(){
     // Define the range for the random number
@@ -241,4 +245,16 @@ int findIndex(Process process_arr [], int numProcesses, int value) {
         }
     }
     return -1;  // Return -1 if the value is not found
+}
+
+void fragmentationStats(int *value, FreeTable* freeTable){
+    if (value == NULL || freeTable == NULL) {
+        printf("Error: Passed pointer is NULL.\n");
+        return;
+    }
+
+    int fragmentation = freeTable->capacity;
+    if(fragmentation > *value){
+        *value = fragmentation;
+    }
 }
