@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define MAX_PROCESSES 0 //define the maximum number of processes that can be created
+#define MAX_PROCESSES 100 //define the maximum number of processes that can be created
 
 typedef struct {
     pid_t pid;  // Process ID

@@ -3,12 +3,12 @@
 #include <signal.h>
 #include <sys/types.h>
 
-void readNumProcesses(int *num_processes, int max_num_processes) {
-    printf("Enter the number of processes (up to %d): ", max_num_processes);
+void readNumProcesses(int *num_processes){
+    printf("Enter the number of processes: ");
     scanf("%d", num_processes);
 
     // Validate the number of processes
-    if (*num_processes < 1 || *num_processes > max_num_processes) {
+    if (*num_processes < 1 || *num_processes > MAX_PROCESSES) {
         printf("Invalid number of processes. Exiting...\n");
         exit(1); // or return an error code if necessary
     }
@@ -77,7 +77,7 @@ int main(){
     signal(SIGINT, handle_sigint); // Handle interrupt signal
     int num_processes;
     int maxProcesses;
-    int memory[MEMORY_SIZE] = {0}; // Memory array (0 for free, 1 for allocated)
+    int* memory = initialiseMemory(MEMORY_SIZE);
     Process *process = malloc(sizeof(Process));
     FreeTable Freetable;
     FreeTable freeTableCopyBF;
@@ -95,25 +95,13 @@ int main(){
     pid_t* processes_unallocated;
     float bf_memory_usage = 0, wf_memory_usage = 0, ff_memory_usage = 0, nf_memory_usage = 0;
 
-
-    // int bfFragmentation, wfFragmentation, ffFragmentation, nfFragmentation;
-
     srand(time(NULL)); // Seed the random number generator
 
     printf("------Starting simulation------\n");
     printMemory(memory);
 
-    // Prompt the user to enter a value for MAX_PROCESSES
-    printf("Enter the maximum number of processes: ");
-    scanf("%d", &maxProcesses);
-
-    // Assign the user-input value to MAX_PROCESSES
-    #undef MAX_PROCESSES
-    #define MAX_PROCESSES maxProcesses
-
-    readNumProcesses(&num_processes, maxProcesses); //reading the number of processes from the user
-
-    // Prompt user for compaction
+    readNumProcesses(&num_processes);
+    
     printf("Enter 1 to simulate with compaction, 0 otherwise: ");
     scanf("%d", &isCompact);
     printf("\n");
@@ -303,6 +291,8 @@ int main(){
     printf("\n");
 
     printFreeTable(&freeTableCopyNF);
+
+    // printf("------Simulation completed------\n");
 
 
     calcMemoryUsage(best_fit_processes, best_fit_num_processes, &bf_memory_usage);

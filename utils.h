@@ -7,10 +7,10 @@
 #include "process.h"
 #include <string.h>
 
-#define MEMORY_SIZE 50
+#define MEMORY_SIZE 500
 #define MAX_ATTEMPTS 50
-#define MAX_FREE_TABLE_SIZE 50
-#define MAX_PROCESS_ADDRESS_TABLE_SIZE 50
+#define MAX_FREE_TABLE_SIZE 250
+#define MAX_PROCESS_ADDRESS_TABLE_SIZE 100
 
 extern int bf_fragmentation; //initialising the fragmentation for best fit
 extern int wf_fragmentation; //initialising the fragmentation for worst fit
@@ -207,5 +207,7 @@ int findIndex(Process process_arr [], int numProcesses, int value);
 void fragmentationStats(int *value, FreeTable* freeTable); //function to print the fragmentation statistics
 
 void increaseNumDeallocations(int *value);
+
+int *initialiseMemory(int memorySize);
 
 #endif
