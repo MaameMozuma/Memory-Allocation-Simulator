@@ -289,11 +289,3 @@ void increaseNumDeallocations(int *value){
     }
     *value += 1;
 }
-
-int *initialiseMemory(int memorySize){
-    int* memory = malloc(memorySize * sizeof(int));
-    for(int i = 0; i < memorySize; i++){
-        memory[i] = 0;
-    }
-    return memory;
-}

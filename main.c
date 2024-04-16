@@ -3,17 +3,6 @@
 #include <signal.h>
 #include <sys/types.h>
 
-void readNumProcesses(int *num_processes){
-    printf("Enter the number of processes: ");
-    scanf("%d", num_processes);
-
-    // Validate the number of processes
-    if (*num_processes < 1 || *num_processes > MAX_PROCESSES) {
-        printf("Invalid number of processes. Exiting...\n");
-        exit(1); // or return an error code if necessary
-    }
-}
-
 void initialize(FreeTable *Freetable, ProcessAddrTable *AddrTable) {
     initializeFreeTable(Freetable);
     initializeProcessAddrTable(AddrTable);
@@ -26,6 +15,7 @@ void createParentProcess(Process *parent_process, int lowerbound, int upperbound
 }
 
 void createAdditionalProcesses(Process* process, Process process_arr[], int num_processes, int lowerbound, int upperbound) {
+    printf("%d\n", num_processes);
     for (int i = 1; i < num_processes; i++) {
         process = getProcessID();
         int memory_required = generateRandomMemorySize(lowerbound, upperbound); // or any other appropriate range
@@ -75,9 +65,8 @@ void printStats(float bf_memory_usage, float wf_memory_usage, float ff_memory_us
 int main(){
     signal(SIGSEGV, handle_sigsev); // Handle segmentation fault signal
     signal(SIGINT, handle_sigint); // Handle interrupt signal
-    int num_processes;
     int maxProcesses;
-    int* memory = initialiseMemory(MEMORY_SIZE);
+    int memory[MEMORY_SIZE] = {0}; // Memory array (0 for free, 1 for allocated)
     Process *process = malloc(sizeof(Process));
     FreeTable Freetable;
     FreeTable freeTableCopyBF;
@@ -95,22 +84,41 @@ int main(){
     pid_t* processes_unallocated;
     float bf_memory_usage = 0, wf_memory_usage = 0, ff_memory_usage = 0, nf_memory_usage = 0;
 
+
+    // int bfFragmentation, wfFragmentation, ffFragmentation, nfFragmentation;
+
     srand(time(NULL)); // Seed the random number generator
 
     printf("------Starting simulation------\n");
     printMemory(memory);
 
-    readNumProcesses(&num_processes);
-    
+    int num_processes;
+    printf("Enter the number of processes (up to %d): ", MAX_PROCESSES);
+    scanf("%d", &num_processes);
+    printf("\n");
+
+    // Validate the number of processes
+    if (num_processes < 1 || num_processes > MAX_PROCESSES) {
+        printf("Invalid number of processes. Exiting...\n");
+        exit(1); // or return an error code if necessary
+    }
+
+    //readNumProcesses(&num_processes); //reading the number of processes from the user
+
+    // Prompt user for compaction
     printf("Enter 1 to simulate with compaction, 0 otherwise: ");
     scanf("%d", &isCompact);
     printf("\n");
+
+    printf("Number of processes: %d\n", num_processes); //printing the number of processes
 
     initialize(&Freetable, &AddrTable); //initialising the free table and the process address table
 
     createParentProcess(process, 1, 5); //creating the parent process
 
     createAdditionalProcesses(process, processes_in_memory, num_processes, 5, 15); //creating the additional processes
+
+    printf("Number of processes: %d\n", num_processes); //printing the number of processes
 
     printAllProcesses(processes_in_memory, num_of_processes); //printing all the processes in memory
 
@@ -292,8 +300,6 @@ int main(){
 
     printFreeTable(&freeTableCopyNF);
 
-    // printf("------Simulation completed------\n");
-
 
     calcMemoryUsage(best_fit_processes, best_fit_num_processes, &bf_memory_usage);
     calcMemoryUsage(worst_fit_processes, worst_fit_num_processes, &wf_memory_usage);
@@ -304,7 +310,5 @@ int main(){
     printStats(bf_memory_usage, wf_memory_usage, ff_memory_usage, nf_memory_usage, bf_fragmentation, 
     wf_fragmentation, ff_fragmentation, nf_fragmentation, bf_num_deallocations, wf_num_deallocations, 
     ff_num_deallocations, nf_num_deallocations);
-
-
 
 }
