@@ -51,18 +51,27 @@ void printStats(float bf_memory_usage, float wf_memory_usage, float ff_memory_us
                 int bf_num_deallocations, int wf_num_deallocations, int ff_num_deallocations, int nf_num_deallocations
         ){
     printf("Statistics \n");
-    printf("+-----------+--------------+--------------+-------------+\n");
-    printf("| Algorithm | Memory Usage | Fragmentation | Deallocation |\n");
-    printf("+-----------+--------------+--------------+-------------+\n");
-    printf("| Best Fit  | %.2f%%       | %d            | %d           |\n", bf_memory_usage, bf_fragmentation, bf_num_deallocations);
-    printf("| Worst Fit | %.2f%%       | %d            | %d           |\n", wf_memory_usage, wf_fragmentation, wf_num_deallocations);
-    printf("| First Fit | %.2f%%       | %d            | %d           |\n", ff_memory_usage, ff_fragmentation, ff_num_deallocations);
-    printf("| Next Fit  | %.2f%%       | %d            | %d           |\n", nf_memory_usage, nf_fragmentation, nf_num_deallocations);
-    printf("+-----------+--------------+--------------+-------------+\n");
+    printf("+-----------+--------------+--------------+---------------+\n");
+    printf("| Algorithm | Memory Usage | Fragmentation| Deallocation  |\n");
+    printf("+-----------+--------------+--------------+---------------+\n");
+    printf("| Best Fit  | %.2f%%        | %d            | %d           |\n", bf_memory_usage, bf_fragmentation, (bf_num_deallocations == -1) ? 0: bf_num_deallocations);
+    printf("| Worst Fit | %.2f%%        | %d            | %d           |\n", wf_memory_usage, wf_fragmentation, (wf_num_deallocations == -1) ? 0: wf_num_deallocations);
+    printf("| First Fit | %.2f%%        | %d            | %d           |\n", ff_memory_usage, ff_fragmentation, (ff_num_deallocations == -1) ? 0: ff_num_deallocations);
+    printf("| Next Fit  | %.2f%%        | %d            | %d           |\n", nf_memory_usage, nf_fragmentation, (nf_num_deallocations == -1) ? 0: nf_num_deallocations);
+    printf("+-----------+--------------+--------------+---------------+\n");
 }
 
 
-int main(){
+int main(int argc , char *argv[]){
+    if(argc < 3){
+        printf("Usage: %s <integer> <integer>\n", argv[0]);
+        return 1;
+    }
+
+    int num_processes = atoi(argv[1]);
+    int isCompact = atoi(argv[2]);
+
+
     signal(SIGSEGV, handle_sigsev); // Handle segmentation fault signal
     signal(SIGINT, handle_sigint); // Handle interrupt signal
     int maxProcesses;
@@ -80,37 +89,20 @@ int main(){
     ProcessAddrTable AddrTableCopyNF;
     FreeEntry lastAllocatedBlock = {-1, -1};
     int best_fit_num_processes, worst_fit_num_processes, first_fit_num_processes, next_fit_num_processes;
-    int isCompact;
     pid_t* processes_unallocated;
     float bf_memory_usage = 0, wf_memory_usage = 0, ff_memory_usage = 0, nf_memory_usage = 0;
 
-
-    // int bfFragmentation, wfFragmentation, ffFragmentation, nfFragmentation;
 
     srand(time(NULL)); // Seed the random number generator
 
     printf("------Starting simulation------\n");
     printMemory(memory);
 
-    int num_processes;
-    printf("Enter the number of processes (up to %d): ", MAX_PROCESSES);
-    scanf("%d", &num_processes);
-    printf("\n");
-
     // Validate the number of processes
     if (num_processes < 1 || num_processes > MAX_PROCESSES) {
         printf("Invalid number of processes. Exiting...\n");
         exit(1); // or return an error code if necessary
     }
-
-    //readNumProcesses(&num_processes); //reading the number of processes from the user
-
-    // Prompt user for compaction
-    printf("Enter 1 to simulate with compaction, 0 otherwise: ");
-    scanf("%d", &isCompact);
-    printf("\n");
-
-    printf("Number of processes: %d\n", num_processes); //printing the number of processes
 
     initialize(&Freetable, &AddrTable); //initialising the free table and the process address table
 
@@ -149,15 +141,8 @@ int main(){
 
     for (int i = 0; i < num_processes; i++) {
         if (processes_unallocated[i] != -1) {
-            printf("Process %d was not allocated memory\n", processes_unallocated[i]);
-        }
-    }
-
-    for (int i = 0; i < num_processes; i++) {
-        if (processes_unallocated[i] != -1) {
             int index = findIndex(processes_in_memory, num_of_processes, processes_unallocated[i]);
             shiftProcessesInMemory(processes_in_memory, &num_of_processes, index);
-            printf("Process %d was not allocated memory\n", processes_unallocated[i]);
             best_fit_num_processes -= 1;
             worst_fit_num_processes -= 1;
             first_fit_num_processes -= 1;

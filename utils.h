@@ -1,7 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-
 #include <stdlib.h>
 #include <time.h> 
 #include "process.h"
@@ -206,6 +205,10 @@ int findIndex(Process process_arr [], int numProcesses, int value);
 */
 void fragmentationStats(int *value, FreeTable* freeTable); //function to print the fragmentation statistics
 
+/**
+ * The function tracks the number of deallocations for each memory allocation algorithm.
+ * @param value pointer to the number of deallocations
+*/
 void increaseNumDeallocations(int *value);
 
 #endif
