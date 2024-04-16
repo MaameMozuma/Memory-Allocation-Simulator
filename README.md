@@ -66,3 +66,7 @@ _Note:_ Run similar command as 2 if permission is denied
 
 
 _Note:_ This program was tested on both Mac OS and Ubuntu 22.04. The project also does not require any sort of hosting and is simply run locally
+
+### Overview of project
+To see a brief overview of the project, access the link [here](https://youtu.be/K-UOyZRXeHI)
+
